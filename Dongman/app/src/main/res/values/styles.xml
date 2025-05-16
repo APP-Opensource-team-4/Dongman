@@ -1,0 +1,14 @@
+<resources>
+    <style name="SportButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#333333</item>
+        <item name="android:background">@drawable/sport_button_bg</item>
+        <item name="android:layout_margin">6dp</item>
+    </style>
+</resources>

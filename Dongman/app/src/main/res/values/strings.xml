@@ -1,3 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Dongman</string>
+    <style name="SportsButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:backgroundTint">#EFEFEF</item>
+        <item name="android:textColor">#333333</item>
+        <item name="cornerRadius">20dp</item>
+    </style>
 </resources>
