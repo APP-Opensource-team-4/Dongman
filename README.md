@@ -36,5 +36,31 @@ https://www.figma.com/design/tPXTx3xhPB6JhA1DWHtvTk/Untitled?node-id=0-1&t=jvUpc
 See Android Studio & AGP compatibility options.
 오류 발생 시, AGP Update 할 것.
 
+---
+<br/>
 
+#### github에 올리는 방법
 
+```
+cd 경로 입력
+
+git clone [경로]
+
+git lfs install
+
+git init
+
+git remote add origin [저장소 링크]
+
+git lfs track "*.psd"
+
+git add .gitattributes
+
+git add .
+
+git commit -m "commit"
+
+git push origin master
+
+이후 github에서 기본 branch를 master로 변경하면 끝.
+```
