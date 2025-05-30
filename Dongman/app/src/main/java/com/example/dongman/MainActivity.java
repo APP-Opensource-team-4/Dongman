@@ -2,6 +2,7 @@ package com.example.dongman;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,6 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,9 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.nav_home)
                 .setOnClickListener(v -> { /* 홈: 현재 화면 */ });
-
-        findViewById(R.id.btn_write_new).setOnClickListener(v ->
-                startActivity(new Intent(this, PostWriteActivity.class)));
     }
 
     private void fill(LinearLayout target, List<Post> data, LayoutInflater inf) {
