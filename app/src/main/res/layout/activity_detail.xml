@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- ───────── 본문 박스: padding 24dp ───────── -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_marginTop="0dp"
+        android:id="@+id/contentBox"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/divider_line">
+
+        <!-- 상단 툴바 -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@android:color/transparent"
+            android:padding="14dp"
+            app:navigationIcon="@drawable/arrow_back"
+            tools:ignore="MissingConstraints" />
+
+        <!-- 썸네일 -->
+        <ImageView
+            android:id="@+id/img_cover"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder_thumbnail"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp" />
+
+        <!-- 제목 -->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="배드민턴 모임"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/img_cover"
+            app:layout_constraintTop_toTopOf="@id/img_cover"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="16dp" />
+
+        <!-- 모임장 / 조회수 -->
+        <TextView
+            android:id="@+id/tv_manager"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="모임장 : 동순이"
+            app:layout_constraintStart_toStartOf="@id/tv_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            app:layout_constraintEnd_toEndOf="@id/tv_title"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/tv_views"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="조회수 : 12"
+            app:layout_constraintStart_toStartOf="@id/tv_manager"
+            app:layout_constraintTop_toBottomOf="@id/tv_manager"
+            app:layout_constraintEnd_toEndOf="@id/tv_manager"
+            android:layout_marginTop="2dp" />
+
+        <!-- 본문 -->
+        <TextView
+            android:id="@+id/tv_body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="안녕하세요!\n오창호수공원에서 같이 밤에 달리실 분 구해요.\n저녁 드시고 천천히 나오시면 될 것 같아요.\n2명만 더 구하고 모집 종료하겠습니다!\n편하게 채팅 주세요"
+            android:lineSpacingExtra="2dp"
+            app:layout_constraintStart_toStartOf="@id/img_cover"
+            app:layout_constraintTop_toBottomOf="@id/img_cover"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp" />
+
+        <!-- 모집 정보 제목 -->
+        <TextView
+            android:id="@+id/label_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="모집 정보"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/tv_body"
+            app:layout_constraintTop_toBottomOf="@id/tv_body"
+            android:layout_marginTop="24dp" />
+
+        <!-- 아래 화살표 -->
+        <ImageView
+            android:id="@+id/arrow_down"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_chevron_down"
+            app:layout_constraintStart_toEndOf="@id/label_info"
+            app:layout_constraintBottom_toBottomOf="@id/label_info"
+            android:layout_marginStart="4dp" />
+
+        <!-- 모집 정보 상자 -->
+        <LinearLayout
+            android:id="@+id/box_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#FFF9F5E6"
+            android:padding="16dp"
+            app:layout_constraintStart_toStartOf="@id/label_info"
+            app:layout_constraintTop_toBottomOf="@id/label_info"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp">
+
+            <TextView
+                android:id="@+id/tv_recruit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="모집 인원 : 6명" />
+
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="시간 : 매주 토요일 20시"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/tv_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="장소 : 충청북도 오창호수공원"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/tv_condition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="가입 조건 : 없음"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- ───────── 하단 구분선 & 버튼 (padding 영향 없음) ───────── -->
+    <View
+        android:id="@+id/divider_line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#E0E0E0"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_chat" />
+
+    <ImageButton
+        android:id="@+id/btn_like"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/like_selector"
+        android:background="@null"
+        android:contentDescription="좋아요"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="10dp" />
+
+    <Button
+        android:id="@+id/btn_chat"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="채팅하기"
+        android:backgroundTint="#007AFF"
+        android:textColor="#FFFFFF"
+        app:cornerRadius="24dp"
+        app:layout_constraintStart_toEndOf="@id/btn_like"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="10dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

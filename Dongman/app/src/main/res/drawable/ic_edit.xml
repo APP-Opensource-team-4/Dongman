@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 연필 본체 (기존) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M3 17.25L17.81 2.44c0.39-0.39 1.02-0.39 1.41 0l2.34 2.34c0.39 0.39 0.39 1.02 0 1.41L6.75 21H3v-3.75zM20.71 5.63l-2.34-2.34 1.06-1.06c0.2-0.2 0.51-0.2 0.71 0l1.63 1.63c0.2 0.2 0.2 0.51 0 0.71l-1.06 1.06z"/>
+
+    <!-- 밑줄 (연필 폭과 맞춰서) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M3,21h18v2h-18z"/>
+</vector>

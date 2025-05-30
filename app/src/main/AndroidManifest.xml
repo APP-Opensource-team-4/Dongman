@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/dongman_icon"
+        android:label="동만이"
+        android:roundIcon="@drawable/dongman_icon"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Dongman">
+
+        <!-- 인트로(런처) 화면 -->
+        <activity
+            android:name=".IntroActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- 메인 화면 -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"/>
+
+        <!-- 글 세부 화면 -->
+        <activity
+            android:name=".DetailActivity"
+            android:exported="false"/>
+
+        <!-- 로그인 화면 -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"/>
+
+        <!-- 회원가입 화면 -->
+        <activity
+            android:name=".SignupActivity"
+            android:exported="false"/>
+
+        <!-- 관심 운동 선택 화면 -->
+        <activity
+            android:name=".InterestActivity"
+            android:exported="false"/>
+
+<!--        &lt;!&ndash; (선택) 채팅 화면 — DetailActivity에서 호출 예시 &ndash;&gt;-->
+<!--        <activity-->
+<!--            android:name=".ChatActivity"-->
+<!--            android:exported="false"/>-->
+
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false"/>
+        
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ChatActivity"
+            android:exported="false"/>
+
+    </application>
+</manifest>

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- ───────── 상단 툴바(뒤로가기) ───────── -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@android:color/transparent"
+        android:padding="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/arrow_back" />
+
+    <!-- ───────── 아바타 + 닉네임 + 위치 ───────── -->
+    <ImageView
+        android:id="@+id/img_avatar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/myprofile_icon"
+
+        android:background="@drawable/myprofile_icon"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="동만이"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/img_avatar"
+        app:layout_constraintTop_toTopOf="@id/img_avatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="22dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/tv_location"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="청주시 개신동"
+        android:textSize="14sp"
+        android:textColor="#9E9E9E"
+        app:layout_constraintStart_toStartOf="@id/tv_name"
+        app:layout_constraintTop_toBottomOf="@id/tv_name"
+        app:layout_constraintEnd_toEndOf="@id/tv_name"
+        android:layout_marginTop="2dp" />
+
+    <!-- ───────── 프로필 수정 버튼 ───────── -->
+    <Button
+        android:id="@+id/btn_edit_profile"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:text="프로필 수정"
+        android:backgroundTint="#E0E0E0"
+        android:textColor="#000000"
+        app:cornerRadius="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/img_avatar"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="24dp" />
+
+    <!-- ───────── 열정 지수 ───────── -->
+    <TextView
+        android:id="@+id/label_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="열정 지수"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/btn_edit_profile"
+        app:layout_constraintTop_toBottomOf="@id/btn_edit_profile"
+        android:layout_marginTop="24dp" />
+
+    <TextView
+        android:id="@+id/tv_score_percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="88%"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/btn_edit_profile"
+        app:layout_constraintBaseline_toBaselineOf="@id/label_score" />
+
+    <ProgressBar
+        android:id="@+id/progress_score"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="8dp"
+        android:max="100"
+        android:progress="88"
+        android:progressTint="#EF9A9A"
+        android:progressBackgroundTint="#E0E0E0"
+        app:layout_constraintStart_toStartOf="@id/btn_edit_profile"
+        app:layout_constraintEnd_toEndOf="@id/btn_edit_profile"
+        app:layout_constraintTop_toBottomOf="@id/label_score"
+        android:layout_marginTop="4dp" />
+
+    <!-- ───────── 메뉴 리스트(내 모임~로그아웃) ───────── -->
+    <LinearLayout
+        android:id="@+id/menu_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="@id/btn_edit_profile"
+        app:layout_constraintEnd_toEndOf="@id/btn_edit_profile"
+        app:layout_constraintTop_toBottomOf="@id/progress_score"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="20dp">
+
+        <!-- ① 내 모임 -->
+        <include layout="@layout/item_profile_row"
+            android:id="@+id/row_mine"
+            android:tag="내 모임" />
+
+        <!-- ② 최근 본 모임 -->
+        <include layout="@layout/item_profile_row"
+            android:id="@+id/row_recent"
+            android:tag="최근 본 모임" />
+
+        <!-- ③ 찜한 모임 -->
+        <include layout="@layout/item_profile_row"
+            android:id="@+id/row_like"
+            android:tag="찜한 모임" />
+
+        <!-- ④ 알림 설정 -->
+        <include layout="@layout/item_profile_row"
+            android:id="@+id/row_alarm"
+            android:tag="알림 설정" />
+
+        <!-- ⑤ 로그아웃 -->
+        <include layout="@layout/item_profile_row"
+            android:id="@+id/row_logout"
+            android:tag="로그아웃" />
+
+        <!-- 임시 로그인 버튼 -->
+        <include layout="@layout/item_profile_row"
+            android:id="@+id/row_login"
+            android:tag="로그인 임시" />
+    </LinearLayout>
+
+    <!-- ──────────── 하단부 (padding 영향 없음) ──────────── -->
+    <View
+        android:id="@+id/divider_line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#A0A0A0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav" />
+
+    <LinearLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:background="#ffffff"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- 홈 -->
+        <LinearLayout
+            android:id="@+id/nav_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/home_icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="홈"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <!-- 친구 목록 -->
+        <LinearLayout
+            android:id="@+id/nav_friend"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/friendlist_icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="친구 목록"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <!-- 내 채팅 -->
+        <LinearLayout
+            android:id="@+id/nav_chat"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/chatting_icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="내 채팅"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <!-- 내 프로필 -->
+        <LinearLayout
+            android:id="@+id/nav_profile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:src="@drawable/myprofile_icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="내 프로필"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+

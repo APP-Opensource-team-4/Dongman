@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="32dp"
+        android:layout_height="51dp"
+        android:background="@android:color/transparent"
+        app:navigationIcon="@drawable/arrow_back"
+        tools:layout_editor_absoluteX="-10dp"
+        tools:layout_editor_absoluteY="-9dp"
+        tools:ignore="MissingConstraints" />
+
+    <!-- 30 % 지점에 가이드라인 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_30"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.20" />
+
+    <!-- 로그인 제목을 가이드라인 아래에 붙임 -->
+    <TextView
+        android:id="@+id/textLoginTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="로그인"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/guide_30"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 이하 모든 뷰들의 Top anchor 를 제목에 물려 두면 같이 내려옵니다 -->
+    <TextView
+        android:id="@+id/textLoginGuide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="아이디와 비밀번호를 입력하세요."
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/textLoginTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+    <!-- …중략(기존 EditText·Button·카카오/Google 버튼 동일) … -->
+
+    <EditText
+        android:id="@+id/editId"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:hint="아이디"
+        android:background="@android:drawable/edit_text"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@id/textLoginGuide"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp" />
+
+    <EditText
+        android:id="@+id/editPw"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="5dp"
+        android:background="@android:drawable/edit_text"
+        android:hint="비밀번호"
+        android:inputType="textPassword"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editId" />
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="로그인"
+        android:backgroundTint="#007BFF"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/editPw"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp" />
+
+    <LinearLayout
+        android:id="@+id/layoutSignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/btnLogin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="계정이 없으신가요?" />
+
+        <TextView
+            android:id="@+id/textSignUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="   회원가입"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnKakao"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="@drawable/kakao_login"
+        android:contentDescription="kakao_login"
+        app:layout_constraintTop_toBottomOf="@id/layoutSignUp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
+
+    <ImageButton
+        android:id="@+id/btnGoogle"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="@drawable/google_login"
+        android:contentDescription="google_login"
+        app:layout_constraintTop_toBottomOf="@id/btnKakao"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

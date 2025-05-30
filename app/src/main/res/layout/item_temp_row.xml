@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp">   <!-- 행 사이 여백 4dp -->
+
+    <!-- 썸네일 (72dp) -->
+    <ImageView
+        android:id="@+id/row_thumb"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:background="#DDDDDD"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="8dp" />
+
+    <!-- 제목 (17sp) -->
+    <TextView
+        android:id="@+id/row_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/row_thumb"
+        app:layout_constraintTop_toTopOf="@id/row_thumb"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp" />
+
+    <!-- 메타 정보 -->
+    <TextView
+        android:id="@+id/row_meta"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/row_title"
+        app:layout_constraintTop_toBottomOf="@id/row_title"
+        app:layout_constraintEnd_toEndOf="@id/row_title"
+        android:layout_marginTop="2dp" />
+
+    <!-- 위치 -->
+    <TextView
+        android:id="@+id/row_location"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/row_meta"
+        app:layout_constraintTop_toBottomOf="@id/row_meta"
+        app:layout_constraintEnd_toEndOf="@id/row_meta"
+        android:layout_marginTop="2dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

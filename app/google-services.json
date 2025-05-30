@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "29104031519",
+    "project_id": "dongman-bc553",
+    "storage_bucket": "dongman-bc553.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:29104031519:android:86e42a58a51d6bad88122a",
+        "android_client_info": {
+          "package_name": "com.example.dongman"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA36cL8jLU_bV9jPjO9BEgL99mKzpHhoAI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

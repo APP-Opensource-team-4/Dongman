@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="#FFFFFF">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        app:navigationIcon="@drawable/arrow_back"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvInterestTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="관심 운동 선택 화면"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="34dp"/>
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/gridSports"
+        android:layout_width="320dp"
+        android:layout_height="420dp"
+        android:layout_marginTop="0dp"
+        app:alignmentMode="alignBounds"
+        app:columnCount="3"
+        app:layout_constraintBottom_toTopOf="@id/btnComplete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvInterestTitle"
+        app:useDefaultMargins="true">
+
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="자전거" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="테니스/스쿼시" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="볼링" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="배드민턴" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="스키/보드" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="골프" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="배구" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="수영" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="요가" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="농구" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="클라이밍" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="축구" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="러닝/마라톤" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="야구" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="주짓수" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="검도" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="헬스/크로스핏" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="승마" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="복싱" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="족구" />
+        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="다이어트" />
+
+
+    </androidx.gridlayout.widget.GridLayout>
+
+    <Button
+        android:id="@+id/btnComplete"
+        android:layout_width="150dp"
+        android:layout_height="52dp"
+        android:text="완료"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#007BFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="160dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
