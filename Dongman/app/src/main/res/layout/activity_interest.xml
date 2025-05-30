@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    android:paddingTop="30dp">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -34,36 +34,99 @@
         android:id="@+id/gridSports"
         android:layout_width="320dp"
         android:layout_height="420dp"
-        android:layout_marginTop="0dp"
         app:alignmentMode="alignBounds"
         app:columnCount="3"
         app:layout_constraintBottom_toTopOf="@id/btnComplete"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvInterestTitle"
+        app:layout_constraintVertical_bias="0.476"
         app:useDefaultMargins="true">
 
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="자전거" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="테니스/스쿼시" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="볼링" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="배드민턴" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="스키/보드" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="골프" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="배구" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="수영" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="요가" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="농구" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="클라이밍" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="축구" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="러닝/마라톤" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="야구" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="주짓수" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="검도" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="헬스/크로스핏" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="승마" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="복싱" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="족구" />
-        <androidx.appcompat.widget.AppCompatButton style="@style/SportButton" android:text="다이어트" />
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="자전거" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="테니스/스쿼시" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="볼링" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="배드민턴" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="스키/보드" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="골프" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="배구" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="수영" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="요가" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="농구" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="클라이밍" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="축구" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="러닝/마라톤" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="야구" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="주짓수" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="검도" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="헬스/크로스핏" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="승마" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="복싱" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="족구" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/SportButton"
+            android:text="다이어트" />
 
 
     </androidx.gridlayout.widget.GridLayout>
@@ -72,13 +135,13 @@
         android:id="@+id/btnComplete"
         android:layout_width="150dp"
         android:layout_height="52dp"
+        android:layout_marginBottom="52dp"
+        android:backgroundTint="#007BFF"
         android:text="완료"
         android:textColor="#FFFFFF"
-        android:backgroundTint="#007BFF"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="160dp"/>
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

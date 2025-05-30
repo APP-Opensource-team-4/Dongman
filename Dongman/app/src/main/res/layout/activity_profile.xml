@@ -2,13 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="24dp">
 
-    <!-- ───────── 상단 툴바(뒤로가기) ───────── -->
+    <!-- ── 뒤로가기 화살표만 포함한 툴바 ── -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="86dp"
+        android:layout_height="98dp"
         android:background="@android:color/transparent"
         android:padding="24dp"
         app:layout_constraintStart_toStartOf="parent"

@@ -63,5 +63,9 @@
             android:name=".ChatActivity"
             android:exported="false"/>
 
+        <activity
+            android:name=".PostWriteActivity"
+            android:exported="false"/>
+
     </application>
 </manifest>
