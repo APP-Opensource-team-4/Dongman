@@ -63,7 +63,10 @@
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:hint="아이디" />
+                    android:hint="아이디"
+                    android:inputType="textEmailAddress"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCheckId"
@@ -84,6 +87,8 @@
                 android:layout_height="48dp"
                 android:hint="비밀번호"
                 android:inputType="textPassword"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:layout_marginTop="16dp" />
 
             <EditText
@@ -92,6 +97,8 @@
                 android:layout_height="48dp"
                 android:hint="비밀번호 확인"
                 android:inputType="textPassword"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:layout_marginTop="16dp" />
 
             <EditText
@@ -99,7 +106,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:hint="이름"
-                android:layout_marginTop="60dp" />
+                android:inputType="textPersonName"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:layout_marginTop="16dp" />
 
 <!--            <EditText-->
 <!--                android:id="@+id/editBirth"-->
@@ -119,7 +129,10 @@
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:hint="전화번호(- 제외)" />
+                    android:hint="전화번호(- 제외)"
+                    android:inputType="phone"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCheckId2"
@@ -139,6 +152,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:hint="인증번호"
+                android:inputType="number"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:layout_marginTop="16dp" />
 
             <Button

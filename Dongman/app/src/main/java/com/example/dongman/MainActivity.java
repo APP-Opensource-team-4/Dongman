@@ -2,6 +2,11 @@ package com.example.dongman;
 
 import android.content.Intent;
 import android.os.Bundle;
+<<<<<<< HEAD
+=======
+import android.util.Log;
+import android.view.LayoutInflater;
+>>>>>>> f5392973d0472f22d3859c9f0c813aaf98f433c2
 import android.view.View;
 import android.widget.TextView;
 
@@ -14,9 +19,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+<<<<<<< HEAD
 import java.util.Random;
+=======
+import java.util.Map;
+>>>>>>> f5392973d0472f22d3859c9f0c813aaf98f433c2
 
 public class MainActivity extends AppCompatActivity {
 
