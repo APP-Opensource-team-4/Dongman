@@ -1,80 +1,57 @@
-// SignupActivity.java
 package com.example.dongman;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private EditText editId, editPw, editPwConfirm, editName, editPhone, editCode;
-    private FirebaseFirestore db;
+    private EditText idEt,pwEt,pw2Et,nameEt,phoneEt,codeEt;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @Override protected void onCreate(Bundle s) {
+        super.onCreate(s);
         setContentView(R.layout.activity_signup);
+        ((Toolbar)findViewById(R.id.toolbar)).setNavigationOnClickListener(v->finish());
 
-        // 툴바 뒤로가기
-        Toolbar tb = findViewById(R.id.toolbar);
-        tb.setNavigationOnClickListener(v -> finish());
+        idEt   = findViewById(R.id.editId);
+        pwEt   = findViewById(R.id.editPw);
+        pw2Et  = findViewById(R.id.editPwConfirm);
+        nameEt = findViewById(R.id.editName);
+        phoneEt= findViewById(R.id.editPhone);
+        codeEt = findViewById(R.id.editCode);
 
-        // EditText 연결
-        editId = findViewById(R.id.editId);
-        editPw = findViewById(R.id.editPw);
-        editPwConfirm = findViewById(R.id.editPwConfirm);
-        editName = findViewById(R.id.editName);
-        editPhone = findViewById(R.id.editPhone);
-        editCode = findViewById(R.id.editCode);
+        findViewById(R.id.btnSignUp).setOnClickListener(v -> {
+            String id=idEt.getText().toString().trim();
+            String pw=pwEt.getText().toString().trim();
+            String pw2=pw2Et.getText().toString().trim();
+            String name=nameEt.getText().toString().trim();
+            String phone=phoneEt.getText().toString().trim();
+            String code=codeEt.getText().toString().trim();
 
-        Button btnSignUp = findViewById(R.id.btnSignUp);
-        db = FirebaseFirestore.getInstance();
-
-        btnSignUp.setOnClickListener(v -> {
-            String id = editId.getText().toString().trim();
-            String pw = editPw.getText().toString().trim();
-            String pwConfirm = editPwConfirm.getText().toString().trim();
-            String name = editName.getText().toString().trim();
-            String phone = editPhone.getText().toString().trim();
-            String code = editCode.getText().toString().trim();
-
-            if (id.isEmpty() || pw.isEmpty() || pwConfirm.isEmpty() || name.isEmpty() || phone.isEmpty() || code.isEmpty()) {
-                Toast.makeText(this, "모든 항목을 입력해주세요.", Toast.LENGTH_SHORT).show();
-                return;
+            if(id.isEmpty()||pw.isEmpty()||pw2.isEmpty()||name.isEmpty()
+                    ||phone.isEmpty()||code.isEmpty()){
+                toast("모든 항목을 입력해주세요."); return;
             }
+            if(!pw.equals(pw2)){ toast("비밀번호가 일치하지 않습니다."); return; }
 
-            if (!pw.equals(pwConfirm)) {
-                Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            Map<String,Object> u=new HashMap<>();
+            u.put("email",id); u.put("password",pw);
+            u.put("name",name); u.put("phone",phone); u.put("code",code);
 
-            Map<String, Object> user = new HashMap<>();
-            user.put("id", id);
-            user.put("password", pw);
-            user.put("name", name);
-            user.put("phone", phone);
-            user.put("code", code);
-
-            db.collection("users")
-                    .add(user)
-                    .addOnSuccessListener(documentReference -> {
-                        Log.d("Firestore", "회원가입 완료: " + documentReference.getId());
-                        Toast.makeText(this, "회원가입 성공!", Toast.LENGTH_SHORT).show();
+            FirebaseFirestore.getInstance().collection("users")
+                    .add(u)
+                    .addOnSuccessListener(r -> {
+                        toast("회원가입 성공!");
                         startActivity(new Intent(this, InterestActivity.class));
                         finish();
                     })
-                    .addOnFailureListener(e -> {
-                        Log.w("Firestore", "회원가입 실패", e);
-                        Toast.makeText(this, "회원가입 실패. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                    });
+                    .addOnFailureListener(e -> toast("회원가입 실패: "+e.getMessage()));
         });
     }
+    private void toast(String m){ Toast.makeText(this,m,Toast.LENGTH_SHORT).show(); }
 }

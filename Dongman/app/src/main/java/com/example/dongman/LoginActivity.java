@@ -2,71 +2,51 @@ package com.example.dongman;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class LoginActivity extends AppCompatActivity {
-    private EditText editId, editPw;
-    private FirebaseFirestore db;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private EditText edtEmail, edtPw;
+
+    @Override protected void onCreate(Bundle s) {
+        super.onCreate(s);
         setContentView(R.layout.activity_login);
 
-        Toolbar tb = findViewById(R.id.toolbar);
-        tb.setNavigationOnClickListener(v -> finish());
+        ((Toolbar)findViewById(R.id.toolbar)).setNavigationOnClickListener(v -> finish());
 
-        editId = findViewById(R.id.editId);
-        editPw = findViewById(R.id.editPw);
-        Button btnLogin = findViewById(R.id.btnLogin);
-        TextView signUp = findViewById(R.id.textSignUp);
+        edtEmail = findViewById(R.id.edt_email);
+        edtPw    = findViewById(R.id.edt_password);
 
-        db = FirebaseFirestore.getInstance();
+        findViewById(R.id.btn_login).setOnClickListener(v -> {
+            String email = edtEmail.getText().toString().trim();
+            String pw    = edtPw.getText().toString().trim();
 
-        btnLogin.setOnClickListener(v -> {
-            String id = editId.getText().toString().trim();
-            String pw = editPw.getText().toString().trim();
-
-            if (id.isEmpty() || pw.isEmpty()) {
-                Toast.makeText(this, "아이디와 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            db.collection("users")
-                    .whereEqualTo("id", id)
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .whereEqualTo("email", email)
                     .whereEqualTo("password", pw)
                     .get()
-                    .addOnSuccessListener(query -> {
-                        if (!query.isEmpty()) {
-                            for (QueryDocumentSnapshot doc : query) {
-                                Log.d("Login", "로그인 성공: " + doc.getId());
-                            }
-                            Toast.makeText(this, "로그인 성공!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(this, MainActivity.class)); // 메인화면으로 이동
-                            finish();
+                    .addOnSuccessListener(q -> {
+                        if (q.isEmpty()) {
+                            toast("로그인 실패: 정보가 일치하지 않습니다.");
                         } else {
-                            Toast.makeText(this, "아이디 또는 비밀번호가 틀렸습니다.", Toast.LENGTH_SHORT).show();
+                            LoginHelper.setLoggedIn(this,true);
+                            toast("로그인 성공!");
+                            startActivity(new Intent(this, MainActivity.class)
+                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                            finish();
                         }
                     })
-                    .addOnFailureListener(e -> {
-                        Log.e("Login", "로그인 오류", e);
-                        Toast.makeText(this, "로그인 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-                    });
+                    .addOnFailureListener(e -> toast("로그인 오류: "+e.getMessage()));
         });
 
-        signUp.setOnClickListener(v -> {
-            Intent intent = new Intent(this, SignupActivity.class);
-            startActivity(intent);
-        });
+        findViewById(R.id.btn_signup)
+                .setOnClickListener(v -> startActivity(
+                        new Intent(this, SignupActivity.class)));
     }
+    private void toast(String msg){ Toast.makeText(this,msg,Toast.LENGTH_SHORT).show(); }
 }

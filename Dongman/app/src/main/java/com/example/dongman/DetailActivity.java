@@ -15,10 +15,8 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        /* ───── 뒤로가기 ───── */
         Toolbar tb = findViewById(R.id.toolbar);
-        tb.setNavigationOnClickListener(v ->
-                finish());   // 뒤로가기: 이전 Activity 로만 돌아오면 되므로 finish() 로 간단히 처리
+        tb.setNavigationOnClickListener(v -> finish());
 
         /* ───── 데이터 바인딩 ───── */
         Post p = (Post) getIntent().getSerializableExtra("post");
