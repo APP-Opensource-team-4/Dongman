@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:paddingStart="24dp"
     android:paddingEnd="24dp"
-    android:paddingTop="24dp">
+    android:paddingTop="50dp"
+    android:background="#ffffff">
 
     <!-- 뒤로가기만 있는 툴바 (상단 고정) -->
     <androidx.appcompat.widget.Toolbar
@@ -29,7 +30,7 @@
         android:background="@drawable/shape_stroke_round"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        android:layout_marginTop="16dp">   <!-- 살짝 여백 -->
+        android:layout_marginTop="20dp">
 
         <ImageButton
             android:id="@+id/btn_add_photo"
@@ -61,7 +62,7 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/box_photo"
-        android:layout_marginTop="24dp"/>
+        android:layout_marginTop="16dp"/>
 
     <EditText
         android:id="@+id/et_title"
@@ -73,7 +74,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/box_photo"
-        android:layout_marginTop="48dp"/>
+        android:layout_marginTop="40dp"/>
 
     <!-- ───── 시간 & 모집 인원 ───── -->
     <TextView
@@ -84,7 +85,7 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/et_title"
-        android:layout_marginTop="24dp"/>
+        android:layout_marginTop="16dp"/>
 
     <TextView
         android:id="@+id/tv_people"
@@ -130,7 +131,7 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/spinner_time"
-        android:layout_marginTop="24dp"/>
+        android:layout_marginTop="16dp"/>
 
     <EditText
         android:id="@+id/et_location"
@@ -153,12 +154,12 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/et_location"
-        android:layout_marginTop="24dp"/>
+        android:layout_marginTop="16dp"/>
 
     <EditText
         android:id="@+id/et_intro"
         android:layout_width="0dp"
-        android:layout_height="140dp"
+        android:layout_height="200dp"
         android:hint="소개할 모임에 대해 설명해주세요.\n(부적절한 단어가 포함될 경우 게시가 제한될 수 있습니다.)"
         android:background="@drawable/shape_stroke_round"
         android:padding="12dp"
@@ -173,14 +174,14 @@
     <Button
         android:id="@+id/btn_submit"
         android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:text="작성 완료"
+        android:layout_height="50dp"
+        android:layout_marginBottom="-70dp"
         android:backgroundTint="#424242"
+        android:text="작성 완료"
         android:textColor="#FFFFFF"
         app:cornerRadius="8dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/et_intro"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

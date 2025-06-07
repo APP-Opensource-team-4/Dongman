@@ -67,5 +67,13 @@
             android:name=".PostWriteActivity"
             android:exported="false"/>
 
+        <activity
+            android:name=".BoardActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".NotificationSettingsActivity"
+            android:exported="false" />
+
     </application>
 </manifest>

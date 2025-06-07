@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="24dp">
+    android:paddingTop="50dp"
+    android:background="#ffffff">
 
     <!-- ───────── 본문 박스: padding 24dp ───────── -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,7 +13,7 @@
         android:id="@+id/contentBox"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="10dp"
+        android:padding="3dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -41,20 +42,22 @@
             android:layout_marginTop="20dp" />
 
         <!-- 제목 -->
+
+        <!-- 모임장 / 조회수 -->
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="배드민턴 모임"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/img_cover"
-            app:layout_constraintTop_toTopOf="@id/img_cover"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="12dp"
-            android:layout_marginEnd="16dp" />
+            android:layout_marginEnd="16dp"
+            android:text="배드민턴 모임"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@id/img_cover"
+            app:layout_constraintTop_toTopOf="@id/img_cover" />
 
-        <!-- 모임장 / 조회수 -->
         <TextView
             android:id="@+id/tv_manager"
             android:layout_width="0dp"
@@ -85,7 +88,7 @@
             app:layout_constraintStart_toStartOf="@id/img_cover"
             app:layout_constraintTop_toBottomOf="@id/img_cover"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="30dp"
             android:layout_marginEnd="16dp" />
 
         <!-- 모집 정보 제목 -->
@@ -97,7 +100,7 @@
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/tv_body"
             app:layout_constraintTop_toBottomOf="@id/tv_body"
-            android:layout_marginTop="24dp" />
+            android:layout_marginTop="30dp" />
 
         <!-- 아래 화살표 -->
         <ImageView

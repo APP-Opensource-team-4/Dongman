@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="24dp">
+    android:paddingTop="50dp"
+    android:background="#ffffff">
 
     <!-- ───────── 상단 툴바──────────────────────── -->
 
@@ -32,14 +33,14 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="0dp"
         android:layout_marginBottom="20dp"/>
 
     <TextView
         android:id="@+id/tv_screen_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="12"
+        android:text="12 명"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_screen_title"
         app:layout_constraintStart_toStartOf="parent"

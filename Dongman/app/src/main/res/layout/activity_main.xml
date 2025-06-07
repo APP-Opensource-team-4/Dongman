@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="60dp"
+    android:paddingTop="80dp"
     android:background="#ffffff">
 
-    <!-- 상단바 -->
+    <!-- ─── 상단바 ─── -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:background="#ffffff"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:layout_height="48dp"
         android:paddingHorizontal="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -26,32 +25,34 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="충북대학교"
-            android:textColor="#000000"
             android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000000"/>
+
+        <!-- 신규 모임 -->
+        <TextView
+            android:id="@+id/menu_new"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:text="신규 모임"
+            android:textSize="14sp"
+            android:textColor="#666666" />
+
+        <!-- 추천 모임 -->
+        <TextView
+            android:id="@+id/menu_recommend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="추천 모임"
+            android:textSize="14sp"
+            android:textColor="#000000"
             android:textStyle="bold" />
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="16dp"
-            android:src="@drawable/search_icon" />
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="16dp"
-            android:src="@drawable/notification_icon" />
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/message_icon" />
-
     </LinearLayout>
 
-    <!-- 탭 메뉴 -->
+    <!-- ─── 카테고리 필터 ─── -->
     <LinearLayout
-        android:id="@+id/tabMenu"
+        android:id="@+id/filterMenu"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:orientation="horizontal"
@@ -62,649 +63,60 @@
         app:layout_constraintTop_toBottomOf="@id/topBar">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:text="발견"
-            android:textSize="14sp"
-            android:textColor="#666666" />
+            android:id="@+id/btn_latest"
+            style="@style/FilterChipSelected"
+            android:text="최신 순"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:text="추천모임"
-            android:textSize="14sp"
-            android:textColor="#000000"
-            android:textStyle="bold" />
+            android:id="@+id/btn_popular"
+            style="@style/FilterChip"
+            android:text="인기 순"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:text="정모일정"
-            android:textSize="14sp"
-            android:textColor="#666666" />
+            android:id="@+id/btn_views"
+            style="@style/FilterChip"
+            android:text="조회수 순"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:text="신규모임"
-            android:textSize="14sp"
-            android:textColor="#666666" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="클래스"
-            android:textSize="14sp"
-            android:textColor="#666666" />
-
+            android:id="@+id/btn_nearby"
+            style="@style/FilterChip"
+            android:text="가까운 순"/>
     </LinearLayout>
 
-    <!-- 카테고리 필터 -->
-    <LinearLayout
-        android:id="@+id/filterMenu"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:gravity="center_vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tabMenu">
+    <!-- ─── RecyclerView (동적 목록) ─── -->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginEnd="12dp"
-            android:text="전체"
-            android:textSize="12sp"
-            android:textColor="#ffffff"
-            android:background="#000000"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginEnd="12dp"
-            android:text="아웃도어/여행"
-            android:textSize="12sp"
-            android:textColor="#666666"
-            android:background="#f5f5f5"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginEnd="12dp"
-            android:text="운동/스포츠"
-            android:textSize="12sp"
-            android:textColor="#666666"
-            android:background="#f5f5f5"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginEnd="12dp"
-            android:text="게임/오락"
-            android:textSize="12sp"
-            android:textColor="#666666"
-            android:background="#f5f5f5"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:text="인문"
-            android:textSize="12sp"
-            android:textColor="#666666"
-            android:background="#f5f5f5"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp" />
-
-    </LinearLayout>
-
-    <!-- 모임 목록 스크롤뷰 -->
-    <ScrollView
-        android:id="@+id/meeting_container"
+    <!-- ─── 글쓰기 FAB ─── -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_meetings"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:paddingHorizontal="16dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/divider_line"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/filterMenu"
-        app:layout_constraintBottom_toTopOf="@id/divider_line">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- 모임 아이템 1 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/placeholder_thumbnail"
-                    android:scaleType="centerCrop" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="임시 제목"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="임시 내용"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="운동/스포츠 • 청주시 • 멤버 10명"
-                        android:textSize="12sp"
-                        android:textColor="#999999" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- 모임 아이템 2 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/placeholder_thumbnail"
-                    android:scaleType="centerCrop" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="임시 제목"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="임시 내용"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="업무/직무 • 청주시 • 멤버 10명"
-                        android:textSize="12sp"
-                        android:textColor="#999999" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- 모임 아이템 3 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/placeholder_thumbnail"
-                    android:scaleType="centerCrop" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="임시 제목"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="임시 내용"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="운동/스포츠 • 청주시 • 멤버 10명"
-                        android:textSize="12sp"
-                        android:textColor="#999999" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- 모임 아이템 4 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/placeholder_thumbnail"
-                    android:scaleType="centerCrop" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="임시 제목"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="임시 내용"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="아웃도어/여행 • 청주시 • 멤버 10명"
-                        android:textSize="12sp"
-                        android:textColor="#999999" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- 모임 아이템 5 (NEW 뱃지 포함) -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp"
-                android:gravity="center_vertical">
-
-                <FrameLayout
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginEnd="10dp">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/placeholder_thumbnail"
-                        android:scaleType="centerCrop" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top|end"
-                        android:text="NEW"
-                        android:textSize="8sp"
-                        android:textColor="#ffffff"
-                        android:background="#ff0000"
-                        android:paddingHorizontal="4dp"
-                        android:paddingVertical="2dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="4dp" />
-
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="임시 제목"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="임시 내용"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="운동/스포츠 • 청주시 • 멤버 10명"
-                        android:textSize="12sp"
-                        android:textColor="#999999" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- 모임 아이템 6 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/placeholder_thumbnail"
-                    android:scaleType="centerCrop" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="임시 제목"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="임시 내용"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="아웃도어/여행 • 청주시 • 멤버 10명"
-                        android:textSize="12sp"
-                        android:textColor="#999999" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- 모임 아이템 7 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/placeholder_thumbnail"
-                    android:scaleType="centerCrop" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="임시 제목"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="임시 내용"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="음식/미식 • 청주시 • 멤버 12명"
-                        android:textSize="12sp"
-                        android:textColor="#999999" />
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- 모임 아이템 8 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/placeholder_thumbnail"
-                    android:scaleType="centerCrop" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="임시 제목"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="임시 내용"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="봉사/나눔 • 청주시 • 멤버 8명"
-                        android:textSize="12sp"
-                        android:textColor="#999999" />
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- 모임 아이템 9 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/placeholder_thumbnail"
-                    android:scaleType="centerCrop" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="임시 제목"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="임시 내용"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="음악/공연 • 청주시 • 멤버 5명"
-                        android:textSize="12sp"
-                        android:textColor="#999999" />
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- 모임 아이템 10 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/placeholder_thumbnail"
-                    android:scaleType="centerCrop" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="임시 제목"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="임시 내용"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="IT/코딩 • 청주시 • 멤버 20명"
-                        android:textSize="12sp"
-                        android:textColor="#999999" />
-
-                </LinearLayout>
-            </LinearLayout>
-
-
-
-
-        </LinearLayout>
-
-    </ScrollView>
-
-    <!-- ──────────── 하단부 (padding 영향 없음) ──────────── -->
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btn_write"
+        android:layout_width="110dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="글쓰기"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        app:backgroundTint="@color/primaryBlue"
+        app:elevation="6dp"
+        app:icon="@drawable/ic_add"
+        app:iconPadding="4dp"
+        app:iconTint="#FFFFFF"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:shapeAppearanceOverlay="@style/RoundedPill" />
+
+    <!-- ─── 하단 구분선 & 네비게이션 (아이템은 생략) ─── -->
     <View
         android:id="@+id/divider_line"
         android:layout_width="0dp"
@@ -712,7 +124,7 @@
         android:background="#A0A0A0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav" />
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"/>
 
     <LinearLayout
         android:id="@+id/bottomNav"
@@ -720,8 +132,6 @@
         android:layout_height="56dp"
         android:orientation="horizontal"
         android:background="#ffffff"
-        android:clickable="true"
-        android:focusable="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
