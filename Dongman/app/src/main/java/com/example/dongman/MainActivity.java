@@ -30,20 +30,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        Map<String, Object> testUser = new HashMap<>();
-        testUser.put("name", "Jaehoon");
-        testUser.put("email", "jaehoon@example.com");
-
-        db.collection("users")
-                .add(testUser)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d("Firestore", "Document added with ID: " + documentReference.getId());
-                })
-                .addOnFailureListener(e -> {
-                    Log.w("Firestore", "Error adding document", e);
-                });
         seedMeetingData();   // 1) 더미 데이터 준비
         fillMeetingList();   // 2) 화면에 데이터 바인딩
         setupBottomNavigation(); // 3) 하단 네비게이션 터치
