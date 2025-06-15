@@ -24,7 +24,7 @@ import com.google.firebase.firestore.DocumentChange; // DocumentChange 처리용
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.ListenerRegistration; // 리스너 등록 해제를 위해
-import com.google.firebase.firestore.DocumentSnapshot; // DocumentSnapshot 임포트
+import com.google.firebase.firestore.DocumentSnapshot; // ✨ DocumentSnapshot 임포트
 import com.google.firebase.firestore.FieldValue; // FieldValue 임포트 (서버 타임스탬프용)
 
 import java.util.ArrayList;
@@ -352,7 +352,6 @@ public class MainActivity extends AppCompatActivity {
             p.location = selectedSport + " • 청주시 • 멤버 " + (5 + i) + "명";
             p.imageRes = R.drawable.placeholder_thumbnail; // 적절한 이미지 리소스로 변경
             // p.timestamp는 savePostToFirestore에서 FieldValue.serverTimestamp()로 설정되므로 여기서 필요 없습니다.
-            // p.timestamp = new Date(System.currentTimeMillis() - (i * 1000 * 60)); // ✨ 이 줄은 제거합니다.
             savePostToFirestore(p); // 더미 데이터도 Firestore에 저장
         }
     }
