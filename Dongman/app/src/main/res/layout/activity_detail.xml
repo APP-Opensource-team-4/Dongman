@@ -139,12 +139,34 @@
                 android:text="시간 : 매주 토요일 20시"
                 android:layout_marginTop="4dp" />
 
-            <TextView
-                android:id="@+id/tv_location"
+            <!-- ✅ 장소 + 지도 버튼은 ConstraintLayout으로 묶어 한 줄로 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="장소 : 충청북도 오창호수공원"
-                android:layout_marginTop="4dp" />
+                android:layout_marginTop="4dp">
+
+                <TextView
+                    android:id="@+id/tv_location"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="장소 : 충청북도 오창호수공원"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/btn_open_map"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="8dp" />
+
+                <ImageButton
+                    android:id="@+id/btn_open_map"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/googlemap"
+                    android:background="@null"
+                    android:contentDescription="지도 보기"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tv_condition"
@@ -152,6 +174,7 @@
                 android:layout_height="wrap_content"
                 android:text="가입 조건 : 없음"
                 android:layout_marginTop="4dp" />
+
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

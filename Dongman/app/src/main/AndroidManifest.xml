@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.dongman">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 
     <application
         android:name=".DongmanApp"
@@ -10,6 +14,10 @@
         android:roundIcon="@drawable/dongman_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.Dongman">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDAi4rigzrvEJZf6dx6igMnnLt81YcfrcE" />
 
         <!-- 런처(인트로) -->
         <activity
