@@ -1,4 +1,7 @@
+// Post.java
 package com.example.dongman;
+
+import com.google.firebase.firestore.ServerTimestamp;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -6,21 +9,23 @@ import java.util.Date;
 import java.util.List;
 
 public class Post implements Serializable {
-
-    public String id;
-    public String title;
-    public String time;
-    public int count;
-    public String location;
-    public String content;
-    public List<String> imageUrls;
-    public Date timestamp;
+    private String id; // Firestore document ID (set manually)
+    private String title;
+    private String content;
+    private String location;
+    private String time;
+    private int count;
+    private List<String> imageUrls;
+    @ServerTimestamp
+    private Date timestamp;
+    private String hostUid;    // Firebase User ID (UID) of the meeting host
+    private String hostName;   // Name of the meeting host (for display)
 
     public Post() {
         this.imageUrls = new ArrayList<>();
     }
 
-    public Post(String title, String time, int count, String location, String content, List<String> imageUrls, Date timestamp) {
+    public Post(String title, String time, int count, String location, String content, List<String> imageUrls, Date timestamp, String hostUid, String hostName) {
         this.title = title;
         this.time = time;
         this.count = count;
@@ -28,32 +33,92 @@ public class Post implements Serializable {
         this.content = content;
         this.imageUrls = imageUrls != null ? imageUrls : new ArrayList<>();
         this.timestamp = timestamp;
+        this.hostUid = hostUid;
+        this.hostName = hostName;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getTime() { return time; }
-    public void setTime(String time) { this.time = time; }
+    public String getTitle() {
+        return title;
+    }
 
-    public int getCount() { return count; }
-    public void setCount(int count) { this.count = count; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
+    public String getTime() {
+        return time;
+    }
 
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
+    public void setTime(String time) {
+        this.time = time;
+    }
 
-    public List<String> getImageUrls() { return imageUrls; }
-    public void setImageUrls(List<String> imageUrls) { this.imageUrls = imageUrls; }
+    public int getCount() {
+        return count;
+    }
 
-    public Date getTimestamp() { return timestamp; }
-    public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
+    public void setCount(int count) {
+        this.count = count;
+    }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getHostUid() {
+        return hostUid;
+    }
+
+    public void setHostUid(String hostUid) {
+        this.hostUid = hostUid;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
+    // Helper method to get the first image URL
     public String getFirstImageUrl() {
         return (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : null;
     }
