@@ -1,12 +1,16 @@
-// ProfileActivity.java
+// ProfileActivity.java (수정 후)
 package com.example.dongman;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import com.google.firebase.auth.FirebaseAuth; // FirebaseAuth 추가
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -58,10 +62,16 @@ public class ProfileActivity extends AppCompatActivity {
 
         /* ───── 로그아웃 처리 ───── */
         findViewById(R.id.row_logout).setOnClickListener(v -> {
-            LoginHelper.setLoggedIn(this,false);          // prefs → false
-            startActivity(new Intent(this, MainActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-            finish();
+            FirebaseAuth.getInstance().signOut(); // Firebase 로그아웃 호출
+            // LoginHelper.setLoggedIn(this,false); // 이 줄은 이제 필요 없습니다.
+
+            Toast.makeText(this, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show(); // 로그아웃 메시지 추가
+
+            // 로그아웃 후 MainActivity로 돌아가면서 이전 Activity 스택 클리어
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish(); // ProfileActivity 종료
         });
     }
 

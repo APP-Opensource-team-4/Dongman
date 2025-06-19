@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -10,7 +11,8 @@
         android:layout_width="0dp"
         android:layout_height="200dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/camera_logo" app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/camera_logo"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -66,5 +68,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="여기는 모임 소개 내용이 들어갑니다. 상세한 설명을 여기에 작성하세요."/>
+
+    <Button
+        android:id="@+id/chatWithHostButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="모임장과 채팅하기"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

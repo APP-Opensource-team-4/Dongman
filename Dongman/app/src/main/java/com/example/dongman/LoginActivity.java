@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (q.isEmpty()) {
                             toast("로그인 실패: 정보가 일치하지 않습니다.");
                         } else {
-                            LoginHelper.setLoggedIn(this,true);
+                            // LoginHelper.setLoggedIn(this,true); // 이 줄을 삭제했습니다.
                             toast("로그인 성공!");
                             startActivity(new Intent(this, MainActivity.class)
                                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));

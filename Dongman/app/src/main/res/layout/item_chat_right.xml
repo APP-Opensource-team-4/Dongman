@@ -13,10 +13,21 @@
         android:text="메시지"
         android:textSize="14sp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="5dp"
         android:background="@drawable/bg_bubble_right"
         android:textColor="#FFFFFF"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_timestamp_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:textColor="#888888"
+        android:text="오후 03:30"
+        app:layout_constraintEnd_toStartOf="@id/tv_message"
+        app:layout_constraintBottom_toBottomOf="@id/tv_message"
+        android:layout_marginEnd="8dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

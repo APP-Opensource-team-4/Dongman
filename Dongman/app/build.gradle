@@ -6,7 +6,6 @@ plugins {
 android {
     namespace 'com.example.dongman'
     compileSdk 35 // Android 14 (API 34) 이상 요구사항에 맞춰 35로 통일
-    // 또는 compileSdk 34 (안정 버전)
 
     defaultConfig {
         applicationId "com.example.dongman"
@@ -58,6 +57,7 @@ dependencies {
     // 이미지 로딩 라이브러리: Glide
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+
 
     // Room Persistence Library 의존성은 제거됨 (확인용 주석)
     // implementation "androidx.room:room-runtime:2.6.1"
