@@ -10,4 +10,17 @@
         <item name="android:textColor">#333333</item>
         <item name="cornerRadius">20dp</item>
     </style>
+    <string name="app_name">동만이</string>
+    <string-array name="time_options">
+        <item>오전 9시</item>
+        <item>오전 10시</item>
+        <item>오전 11시</item>
+        <item>오후 12시</item>
+        <item>오후 1시</item>
+        <item>오후 2시</item>
+        <item>오후 3시</item>
+        <item>오후 4시</item>
+        <item>오후 5시</item>
+        <item>오후 6시</item>
+    </string-array>
 </resources>

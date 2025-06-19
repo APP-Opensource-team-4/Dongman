@@ -1,11 +1,13 @@
 package com.example.dongman;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log; // Log import 추가
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast; // Toast import 추가
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -17,36 +19,36 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
-// Firestore 관련 Import
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.DocumentChange; // DocumentChange 처리용
+import com.google.firebase.firestore.DocumentChange; // DocumentChange import는 사용되므로 유지
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.ListenerRegistration; // 리스너 등록 해제를 위해
-import com.google.firebase.firestore.DocumentSnapshot; // ✨ DocumentSnapshot 임포트
-import com.google.firebase.firestore.FieldValue; // FieldValue 임포트 (서버 타임스탬프용)
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.DocumentSnapshot;
+// FieldValue는 더미 데이터 저장 시 필요하지 않을 수 있지만, 다른 곳에서 사용 가능성을 위해 유지
+import com.google.firebase.firestore.FieldValue;
 
 import java.util.ArrayList;
-import java.util.Collections; // 리스트 정렬을 위해
-import java.util.Comparator; // 리스트 정렬을 위해
-import java.util.HashMap; // Map 사용을 위해
+import java.util.Collections; // Collections.sort 사용을 위해 유지
+import java.util.Comparator; // Comparator 사용을 위해 유지
+import java.util.HashMap; // Map 사용을 위해 유지 (현재 코드에서 필요 없음. 제거 고려)
 import java.util.List;
-import java.util.Map; // Map 사용을 위해
+import java.util.Map;   // Map 사용을 위해 유지 (현재 코드에서 필요 없음. 제거 고려)
 import java.util.Random;
-import java.util.Date; // Date 클래스 임포트 (Post 객체에서 사용)
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity"; // 로그 태그
+    private static final String TAG = "MainActivity";
 
     /* 리스트 데이터 */
     private final List<Post> meetingPosts = new ArrayList<>();
-    private MeetingAdapter adapter;
+    private MeetingAdapter adapter; // MeetingAdapter 클래스가 올바르게 정의되어 있어야 함
 
     /* Firestore 인스턴스 */
-    private FirebaseFirestore db; // Firestore 인스턴스 선언
-    private ListenerRegistration firestoreListener; // 실시간 리스너 등록 해제를 위한 변수
+    private FirebaseFirestore db;
+    private ListenerRegistration firestoreListener;
 
     /* 중간 필터 / 상단 탭 */
     private TextView btnLatest, btnPopular, btnViews, btnNearby;
@@ -56,12 +58,22 @@ public class MainActivity extends AppCompatActivity {
     /* 글쓰기 결과 */
     private final ActivityResultLauncher<Intent> writeLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), r -> {
-                if (r.getResultCode() == RESULT_OK && r.getData() != null) {
-                    Post p = (Post) r.getData().getSerializableExtra("post");
-                    if (p != null) {
-                        // 게시물을 Firestore에 저장
-                        savePostToFirestore(p);
-                    }
+                Log.d(TAG, "writeLauncher result received.");
+                Log.d(TAG, "Result Code: " + r.getResultCode() + " (Expected: -1 for RESULT_OK)");
+                Log.d(TAG, "Returned Intent data is null: " + (r.getData() == null));
+
+                // PostWriteActivity에서 이미 Firestore에 저장이 완료되었으므로,
+                // MainActivity에서는 별도로 Post 객체를 받아 다시 저장할 필요가 없습니다.
+                // PostWriteActivity가 성공적으로 종료되었는지 (RESULT_OK)만 확인하면 됩니다.
+                if (r.getResultCode() == RESULT_OK) {
+                    Toast.makeText(this, "게시물이 성공적으로 작성되었습니다!", Toast.LENGTH_SHORT).show();
+                    // Firestore addSnapshotListener가 onStart에서 시작되고, 데이터 변경 시
+                    // 자동으로 UI를 업데이트하므로 명시적인 새로고침 호출은 불필요합니다.
+                    // 만약 즉각적인 반영이 필요하다면 loadPostsFromFirestore() 등을 호출할 수 있습니다.
+                    Log.d(TAG, "PostWriteActivity completed successfully. Post list should auto-refresh.");
+                } else {
+                    Log.w(TAG, "ActivityResult did not return RESULT_OK. Result Code: " + r.getResultCode());
+                    Toast.makeText(this, "게시물 작성 취소 또는 오류 발생.", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -70,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(s);
         setContentView(R.layout.activity_main);
 
-        // Firestore 인스턴스 초기화
         db = FirebaseFirestore.getInstance();
 
         bindViews();
@@ -78,138 +89,174 @@ public class MainActivity extends AppCompatActivity {
         setupRecycler();
         setupBottomNavigation();
 
-        // ExtendedFloatingActionButton (글쓰기 버튼)에 safeLaunch 적용
         ExtendedFloatingActionButton fabWrite = findViewById(R.id.btn_write);
         fabWrite.setOnClickListener(v ->
-                safeLaunch(PostWriteActivity.class));
+                // safeLaunch는 로그인 체크만 하고, 실제 액티비티 시작은 writeLauncher로 합니다.
+                safeLaunch(PostWriteActivity.class)); // 이 부분에서 writeLauncher.launch(Intent)를 호출해야 함
 
-        // (선택 사항) 앱 첫 실행 시에만 더미 데이터를 Firestore에 추가
-        // Firestore에 "posts" 컬렉션이 비어있을 때만 더미 데이터 생성
-        db.collection("posts").get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult().isEmpty()) {
-                seedMeetingData();
-            }
-        });
+        // safeLaunch를 다음과 같이 수정해야 합니다.
+        // fabWrite.setOnClickListener(v -> {
+        //     if(LoginHelper.isLoggedIn(this)){
+        //         writeLauncher.launch(new Intent(this, PostWriteActivity.class));
+        //     } else {
+        //         new AlertDialog.Builder(this)
+        //                 .setTitle("로그인이 필요합니다")
+        //                 .setMessage("해당 기능은 로그인 후 이용할 수 있습니다.")
+        //                 .setPositiveButton("로그인하기", (d,w)->startActivity(new Intent(this,LoginActivity.class)))
+        //                 .setNegativeButton("닫기",null)
+        //                 .show();
+        //     }
+        // });
+
+
+        // 앱 첫 실행 시에만 더미 데이터를 Firestore에 추가하도록 로직 수정
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        boolean hasSeeded = prefs.getBoolean("hasSeeded", false);
+
+        if (!hasSeeded) {
+            db.collection("posts").get().addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult().isEmpty()) {
+                    Log.d(TAG, "Firestore 'posts' collection is empty. Seeding dummy data.");
+                    seedMeetingData();
+                    // 더미 데이터 생성 후 플래그 저장 (commit() 대신 apply() 권장)
+                    prefs.edit().putBoolean("hasSeeded", true).apply();
+                } else if (task.isSuccessful()) {
+                    Log.d(TAG, "Firestore 'posts' collection is not empty. No seeding required. Count: " + task.getResult().size());
+                } else {
+                    Log.w(TAG, "Failed to check if 'posts' collection is empty: " + task.getException());
+                }
+            });
+        } else {
+            Log.d(TAG, "App already seeded. Skipping dummy data generation.");
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        // 액티비티가 시작될 때 리스너를 시작합니다.
-        // onStop()에서 리스너를 해제하므로, 화면에 다시 나타날 때마다 리스너를 다시 연결해야 합니다.
-        if (firestoreListener == null) {
-            startListeningForPosts();
-        }
+        // onStart에서 리스너를 시작하고, onStop에서 제거하여 메모리 누수 방지
+        startListeningForPosts();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        // 액티비티가 중지될 때 리스너를 해제합니다. (메모리 누수 방지 및 불필요한 데이터 로드 방지)
         if (firestoreListener != null) {
             firestoreListener.remove();
             firestoreListener = null;
+            Log.d(TAG, "Firestore listener removed.");
         }
     }
 
     /**
-     * Firestore에 게시물을 저장하는 메서드.
-     * FieldValue.serverTimestamp()를 사용하여 서버 시간을 적용합니다.
+     * Firestore에 더미 게시물을 저장하는 메서드.
+     * Post 객체를 직접 Firestore에 추가합니다. (POJO 매핑 사용)
      */
     private void savePostToFirestore(Post post) {
-        // Post 객체를 Map으로 변환하여 Firestore에 보낼 데이터를 준비합니다.
-        // FieldValue.serverTimestamp()는 POJO에 직접 할당할 수 없으므로 Map을 사용합니다.
-        Map<String, Object> postMap = new HashMap<>();
-        postMap.put("title", post.title);
-        postMap.put("meta", post.meta);
-        postMap.put("location", post.location);
-        postMap.put("imageRes", post.imageRes);
-        postMap.put("timestamp", FieldValue.serverTimestamp()); // ✨ 서버 타임스탬프 적용
+        Log.d(TAG, "Attempting to save dummy post to Firestore: " + post.getTitle());
 
+        // Post 객체를 직접 Firestore에 추가합니다.
+        // Post 클래스에 public 필드 또는 public getter/setter가 있다면 Firestore가 자동으로 매핑합니다.
+        // PostWriteActivity에서 사용하는 FieldValue.serverTimestamp() 대신 Date 객체를 사용합니다.
+        // 더미 데이터에는 new Date()로 현재 시간을 넣습니다.
         db.collection("posts")
-                .add(postMap) // Map 형태로 데이터 추가 (자동 ID 생성)
+                .add(post) // Post 객체를 직접 저장
                 .addOnSuccessListener(documentReference -> {
-                    Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                    // UI 업데이트는 addSnapshotListener가 처리하므로, 여기서 meetingPosts에 추가할 필요 없습니다.
-                    Toast.makeText(MainActivity.this, "게시물이 성공적으로 작성되었습니다!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Dummy DocumentSnapshot added with ID: " + documentReference.getId());
+                    // 더미 데이터 저장 시에는 토스트 메시지가 불필요할 수 있습니다.
+                    // Toast.makeText(MainActivity.this, "더미 게시물 저장 완료!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    Log.w(TAG, "Error adding document", e);
-                    Toast.makeText(MainActivity.this, "게시물 작성 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "Error adding dummy document: " + e.getMessage(), e);
+                    Toast.makeText(MainActivity.this, "더미 게시물 저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
     /**
      * Firestore에서 게시물 변경 사항을 실시간으로 감지하는 리스너 설정.
-     * DocumentChange를 사용하여 효율적으로 RecyclerView를 업데이트합니다.
      */
     private void startListeningForPosts() {
-        // 기존 리스너가 있다면 먼저 해제하여 중복 실행을 방지
         if (firestoreListener != null) {
             firestoreListener.remove();
+            Log.d(TAG, "Existing Firestore listener removed before new one.");
         }
 
-        firestoreListener = db.collection("posts")
-                .orderBy("timestamp", Query.Direction.DESCENDING) // timestamp 기준으로 최신순 정렬
-                .addSnapshotListener((snapshots, e) -> {
-                    if (e != null) {
-                        Log.w(TAG, "Listen failed.", e);
-                        Toast.makeText(this, "게시물 로딩 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        return;
+        // TODO: 필터 및 탭 선택에 따라 쿼리 변경 로직 추가
+        Query baseQuery = db.collection("posts");
+
+        // 현재 선택된 탭 (menuNew, menuRecommend)에 따른 정렬
+        // Post.java에 'timestamp' 필드가 Date 타입으로 있어야 합니다.
+        if (currentTab == menuNew) {
+            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING); // 최신순
+        } else if (currentTab == menuRecommend) {
+            // "인기순" 또는 "추천순" 정렬 로직을 추가하려면 Post 클래스에 해당 필드(예: 'views', 'likes')가 필요합니다.
+            // 여기서는 임시로 timestamp 내림차순을 사용합니다.
+            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
+        }
+
+        // 현재 선택된 필터 (btnLatest, btnPopular, btnViews, btnNearby)에 따른 필터링 (where)
+        // 이 부분은 Post 클래스의 필드와 일치하게 수정하거나, Firestore 문서에 추가 필드를 정의해야 합니다.
+        // 현재 Post 클래스에는 'location', 'time', 'count' 등의 필드가 명확히 있습니다.
+        if (currentFilter == btnLatest) {
+            // 이미 timestamp 내림차순으로 정렬되므로 추가 필터링은 필요 없을 수 있습니다.
+        } else if (currentFilter == btnPopular) {
+            // 예시: Post 클래스에 'likes' 또는 'participants' 필드가 있다면
+            // baseQuery = baseQuery.orderBy("likes", Query.Direction.DESCENDING).limit(10);
+        } else if (currentFilter == btnViews) {
+            // 예시: Post 클래스에 'views' 필드가 있다면
+            // baseQuery = baseQuery.orderBy("views", Query.Direction.DESCENDING).limit(10);
+        } else if (currentFilter == btnNearby) {
+            // "주변" 필터링은 GeoFirestore와 같은 복잡한 구현이 필요하거나,
+            // Post에 지역/도시 필드가 있다면 해당 필드로 whereEqualTo/whereArrayContains를 사용할 수 있습니다.
+            // 예시: baseQuery = baseQuery.whereEqualTo("location", "청주시");
+        }
+
+
+        firestoreListener = baseQuery.addSnapshotListener((snapshots, e) -> {
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e);
+                Toast.makeText(this, "게시물 로딩 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (snapshots != null) {
+                // 실시간 변경 사항을 DocumentChange로 처리하여 효율성을 높입니다.
+                // 이는 UI 목록을 업데이트하는 더 나은 방법입니다.
+                // Collections.sort는 Firestore 쿼리에서 orderBy를 사용하고 있다면 필요 없습니다.
+                // 만약 Firestore 쿼리에 orderBy가 없다면 여기서 정렬을 수행해야 합니다.
+                // 현재 baseQuery에 orderBy("timestamp", Query.Direction.DESCENDING)가 있으므로,
+                // List에 추가/수정/삭제 후 추가적인 정렬은 필요 없을 가능성이 높습니다.
+                // (다만 DocumentChange 처리 방식에 따라 정렬이 깨질 수도 있으니 테스트 필요)
+
+                // 일단 모든 변경사항을 반영하기 전에 meetingPosts를 비우고 다시 채우는 것은
+                // DocumentChange의 효율성을 떨어뜨리지만, 데이터 정합성을 가장 쉽게 보장합니다.
+                // 더 최적화된 방법은 DocumentChange.Type에 따라 개별 항목을 추가/수정/삭제하는 것입니다.
+                meetingPosts.clear(); // 변경 전 기존 리스트를 비웁니다.
+                for (DocumentSnapshot document : snapshots.getDocuments()) {
+                    Post post = document.toObject(Post.class); // Firestore 문서 -> Post 객체로 변환
+                    if (post != null) {
+                        post.setId(document.getId()); // 문서 ID도 Post 객체에 저장
+                        meetingPosts.add(post);
                     }
+                }
+                // Firestore 쿼리에 orderBy가 있다면, 아래 수동 정렬은 필요 없습니다.
+                // Collections.sort(meetingPosts, (p1, p2) -> {
+                //     if (p1.getTimestamp() == null && p2.getTimestamp() == null) return 0;
+                //     if (p1.getTimestamp() == null) return 1;
+                //     if (p2.getTimestamp() == null) return -1;
+                //     return p2.getTimestamp().compareTo(p1.getTimestamp());
+                // });
 
-                    if (snapshots != null) {
-                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
-                            Post post = dc.getDocument().toObject(Post.class);
-                            if (post != null) {
-                                post.id = dc.getDocument().getId(); // Firestore 문서 ID를 Post 객체에 저장
 
-                                switch (dc.getType()) {
-                                    case ADDED:
-                                        // 새로 추가된 게시물 (리스트에 추가)
-                                        meetingPosts.add(post);
-                                        Log.d(TAG, "New post: " + post.title);
-                                        break;
-                                    case MODIFIED:
-                                        // 수정된 게시물 (기존 위치 찾아서 업데이트)
-                                        for (int i = 0; i < meetingPosts.size(); i++) {
-                                            if (meetingPosts.get(i).id.equals(post.id)) {
-                                                meetingPosts.set(i, post);
-                                                Log.d(TAG, "Modified post: " + post.title);
-                                                break;
-                                            }
-                                        }
-                                        break;
-                                    case REMOVED:
-                                        // 삭제된 게시물 (기존 위치 찾아서 제거)
-                                        meetingPosts.removeIf(pItem -> pItem.id.equals(post.id));
-                                        Log.d(TAG, "Removed post: " + post.title);
-                                        break;
-                                }
-                            }
-                        }
-                        // 모든 변경 사항 처리 후 리스트를 다시 정렬
-                        // addSnapshotListener의 DocumentChange는 변경 유형별로 오지만,
-                        // 정렬 순서가 보장되지 않을 수 있으므로 전체를 다시 정렬하는 것이 안전합니다.
-                        Collections.sort(meetingPosts, (p1, p2) -> {
-                            // null 체크를 하여 NullPointerException 방지
-                            if (p1.timestamp == null && p2.timestamp == null) return 0;
-                            if (p1.timestamp == null) return 1; // p1이 null이면 p2가 더 크다고 간주 (p1을 뒤로)
-                            if (p2.timestamp == null) return -1; // p2가 null이면 p1이 더 크다고 간주 (p2를 뒤로)
-                            return p2.timestamp.compareTo(p1.timestamp); // 내림차순 정렬 (최신순)
-                        });
+                adapter.notifyDataSetChanged(); // 어댑터에 데이터 변경을 알립니다.
+                Log.d(TAG, "Posts loaded/updated in UI: " + meetingPosts.size() + " items");
 
-                        adapter.notifyDataSetChanged(); // UI 갱신
-                        Log.d(TAG, "Posts loaded/updated: " + meetingPosts.size() + " items");
-
-                        if (!meetingPosts.isEmpty()) {
-                            // RecyclerView를 가장 최신 게시물 위치로 스크롤
-                            ((RecyclerView) findViewById(R.id.rv_meetings)).scrollToPosition(0);
-                        }
-                    }
-                });
+                if (!meetingPosts.isEmpty()) {
+                    ((RecyclerView) findViewById(R.id.rv_meetings)).scrollToPosition(0);
+                }
+            }
+        });
     }
-
 
     /* ───────── RecyclerView ───────── */
     private void setupRecycler() {
@@ -217,11 +264,15 @@ public class MainActivity extends AppCompatActivity {
         rv.setLayoutManager(new LinearLayoutManager(this));
         adapter = new MeetingAdapter(meetingPosts,
                 v -> {
-                    // DetailActivity로 이동하며 Post 객체 전달
-                    Post clickedPost = (Post) v.getTag();
-                    Intent detailIntent = new Intent(this, DetailActivity.class);
-                    detailIntent.putExtra("post", clickedPost);
-                    startActivity(detailIntent);
+                    Post clickedPost = (Post) v.getTag(); // Adapter에서 setTag(post) 필요
+                    if (clickedPost != null) {
+                        Intent detailIntent = new Intent(this, DetailActivity.class);
+                        detailIntent.putExtra("post", clickedPost);
+                        startActivity(detailIntent);
+                    } else {
+                        Log.e(TAG, "Clicked post is null. Check adapter's setTag.");
+                        Toast.makeText(this, "게시물 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    }
                 });
         rv.setAdapter(adapter);
     }
@@ -236,41 +287,49 @@ public class MainActivity extends AppCompatActivity {
         menuNew       = findViewById(R.id.menu_new);
         menuRecommend = findViewById(R.id.menu_recommend);
 
-        currentFilter = btnLatest;
-        currentTab    = menuRecommend;
+        currentFilter = btnLatest; // 초기 필터 설정
+        currentTab    = menuRecommend; // 초기 탭 설정
     }
 
     private void attachListeners() {
-        View.OnClickListener f = v -> {
+        // 필터 버튼 리스너
+        View.OnClickListener filterListener = v -> {
             changeFilter((TextView) v);
-            // 필터링 로직: 여기에 Firestore 쿼리 (예: .whereEqualTo("category", "스포츠"))를 변경
             startListeningForPosts(); // 쿼리 변경 후 리스너 다시 시작 (새로운 필터 적용)
         };
-        btnLatest.setOnClickListener(f);
-        btnPopular.setOnClickListener(f);
-        btnViews.setOnClickListener(f);
-        btnNearby.setOnClickListener(f);
+        btnLatest.setOnClickListener(filterListener);
+        btnPopular.setOnClickListener(filterListener);
+        btnViews.setOnClickListener(filterListener);
+        btnNearby.setOnClickListener(filterListener);
 
-        View.OnClickListener t = v -> {
+        // 탭 버튼 리스너
+        View.OnClickListener tabListener = v -> {
             changeTab((TextView) v);
-            // 정렬/탭 로직: 여기에 Firestore 쿼리의 정렬 기준 (예: .orderBy("views", Query.Direction.DESCENDING))을 변경
             startListeningForPosts(); // 쿼리 변경 후 리스너 다시 시작 (새로운 정렬 적용)
         };
-        menuNew.setOnClickListener(t);
-        menuRecommend.setOnClickListener(t);
+        menuNew.setOnClickListener(tabListener);
+        menuRecommend.setOnClickListener(tabListener);
+
+        // 초기 필터와 탭의 UI 상태를 업데이트
+        changeFilter(currentFilter);
+        changeTab(currentTab);
     }
 
     private void changeFilter(TextView n) {
-        currentFilter.setBackgroundColor(0xFFF5F5F5);
-        currentFilter.setTextColor(0xFF666666);
-        n.setBackgroundColor(0xFF000000);
-        n.setTextColor(0xFFFFFFFF);
+        if (currentFilter != null) { // Null 체크 추가
+            currentFilter.setBackgroundColor(0xFFF5F5F5);
+            currentFilter.setTextColor(0xFF666666);
+        }
+        n.setBackgroundColor(0xFF000000); // 검정색 배경
+        n.setTextColor(0xFFFFFFFF); // 흰색 텍스트
         currentFilter = n;
     }
 
     private void changeTab(TextView n) {
-        currentTab.setTypeface(null, android.graphics.Typeface.NORMAL);
-        currentTab.setTextColor(0xFF666666);
+        if (currentTab != null) { // Null 체크 추가
+            currentTab.setTypeface(null, android.graphics.Typeface.NORMAL);
+            currentTab.setTextColor(0xFF666666);
+        }
         n.setTypeface(null, android.graphics.Typeface.BOLD);
         n.setTextColor(0xFF000000);
         currentTab = n;
@@ -278,35 +337,20 @@ public class MainActivity extends AppCompatActivity {
 
     /* ───────── 하단 네비 ───────── */
     private void setupBottomNavigation() {
-        findViewById(R.id.nav_home   ).setOnClickListener(v -> {}); // 현재 화면
+        findViewById(R.id.nav_home   ).setOnClickListener(v -> {}); // 현재 Activity이므로 특별한 동작 없음
         findViewById(R.id.nav_friend ).setOnClickListener(v -> safeLaunch(BoardActivity.class));
         findViewById(R.id.nav_chat   ).setOnClickListener(v -> safeLaunch(ChatActivity.class));
         findViewById(R.id.nav_profile).setOnClickListener(v -> safeLaunch(ProfileActivity.class));
     }
 
-    /** 로그인 필요 기능 실행용 공통 메서드 */
-    // 화면 아무 곳 터치 시 로그인 체크 메서드 (dispatchTouchEvent) 제거
-    // 이 메서드는 앱 동작에 여러 문제를 일으킬 수 있으므로 제거했습니다.
-    /*
-    @Override public boolean dispatchTouchEvent(@NonNull android.view.MotionEvent e){
-        if(!LoginHelper.isLoggedIn(this)&&e.getAction()==android.view.MotionEvent.ACTION_DOWN){
-            new AlertDialog.Builder(this)
-                    .setTitle("로그인이 필요합니다")
-                    .setMessage("해당 기능은 로그인 후 이용할 수 있습니다.")
-                    .setPositiveButton("로그인하기",
-                            (d,w)->startActivity(new Intent(this,LoginActivity.class)))
-                    .setNegativeButton("닫기",null)
-                    .show();
-            return true;
-        }
-        return super.dispatchTouchEvent(e);
-    }
-    */
-
-    // safeLaunch는 그대로 유지
     private void safeLaunch(Class<?> c){
         if(LoginHelper.isLoggedIn(this)){
-            startActivity(new Intent(this,c));
+            // PostWriteActivity를 호출하는 경우 writeLauncher를 사용합니다.
+            if (c.equals(PostWriteActivity.class)) {
+                writeLauncher.launch(new Intent(this, c));
+            } else {
+                startActivity(new Intent(this, c));
+            }
         }else{
             new AlertDialog.Builder(this)
                     .setTitle("로그인이 필요합니다")
@@ -320,12 +364,11 @@ public class MainActivity extends AppCompatActivity {
 
     /* ───────── 더미 데이터 ───────── */
     private void seedMeetingData() {
-        String[] sport = {"자전거","테니스/스쿼시","볼링","배드민턴","스키/보드","골프","배구",
+        String[] sports = {"자전거","테니스/스쿼시","볼링","배드민턴","스키/보드","골프","배구",
                 "수영","요가","농구","클라이밍","축구","러닝/마라톤","야구","주짓수","검도",
                 "헬스/크로스핏","승마","복싱","족구","다이어트"};
         Random r = new Random();
 
-        // 종목에 어울리는 제목 템플릿 목록
         String[] titleTemplates = {
                 "함께 %s 즐겨요!",
                 "%s 모임, 열정 넘치는 멤버 모집!",
@@ -337,22 +380,31 @@ public class MainActivity extends AppCompatActivity {
                 "우리 동네 %s 같이 배우고 즐겨요!"
         };
 
+        String[] timeOptions = getResources().getStringArray(R.array.time_options);
+
+        // 더미 이미지 URL (placeholder.co 사용)
+        String dummyImageUrl = "https://placehold.co/600x400/CCCCCC/000000?text=Dongman+Post+Image";
+
+
         for (int i = 0; i < 20; i++) {
+            String selectedSport = sports[r.nextInt(sports.length)];
+            String titleTemplate = titleTemplates[r.nextInt(titleTemplates.length)];
+            String selectedTime = timeOptions[r.nextInt(timeOptions.length)];
+            int randomCount = 5 + r.nextInt(10); // 5명에서 14명 사이
+
             Post p = new Post();
+            p.setTitle(String.format(titleTemplate, selectedSport));
+            // content 필드에 모임 소개 저장
+            p.setContent(selectedSport + " 모임에 오신 것을 환영합니다! 상세 내용은 모임에 가입 후 확인해주세요.");
+            p.setLocation("청주시"); // 장소를 특정 도시로 고정하거나 다양하게
+            p.setTime(selectedTime);
+            p.setCount(randomCount);
+            // imageUrls 리스트에 더미 이미지 URL 추가
+            p.setImageUrls(Collections.singletonList(dummyImageUrl)); // 단일 이미지 URL 리스트
+            p.setTimestamp(new Date()); // 현재 시간으로 설정 (실제 앱에서는 FieldValue.serverTimestamp() 권장)
 
-            String selectedSport = sport[r.nextInt(sport.length)]; // 랜덤 종목 선택
-            String titleTemplate = titleTemplates[r.nextInt(titleTemplates.length)]; // 랜덤 제목 템플릿 선택
-
-            // 선택된 종목으로 제목 생성
-            p.title    = String.format(titleTemplate, selectedSport);
-
-            // 메타 내용도 종목에 맞게 조금 더 구체적으로 변경
-            p.meta     = selectedSport + " 모임에 오신 것을 환영합니다! 상세 내용은 모임에 가입 후 확인해주세요.";
-
-            p.location = selectedSport + " • 청주시 • 멤버 " + (5 + i) + "명";
-            p.imageRes = R.drawable.placeholder_thumbnail; // 적절한 이미지 리소스로 변경
-            // p.timestamp는 savePostToFirestore에서 FieldValue.serverTimestamp()로 설정되므로 여기서 필요 없습니다.
-            savePostToFirestore(p); // 더미 데이터도 Firestore에 저장
+            savePostToFirestore(p);
         }
+        Log.d(TAG, "Seed data generation complete.");
     }
 }

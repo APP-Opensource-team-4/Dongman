@@ -1,16 +1,18 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
-    // ✨ plugins 블록에서는 'androidx.room'을 제거합니다.
+    // Room 플러그인은 여기서 제거되었으므로 그대로 유지
 }
 
 android {
     namespace 'com.example.dongman'
+    // compileSdk를 35로 업데이트
     compileSdk 35
 
     defaultConfig {
         applicationId "com.example.dongman"
         minSdk 24
+        // targetSdk도 compileSdk와 동일하게 35로 업데이트하는 것이 좋습니다.
         targetSdk 35
         versionCode 1
         versionName "1.0"
@@ -25,29 +27,41 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        // Java 버전을 17로 업데이트
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
 dependencies {
+    // Firebase BOM을 사용하여 Firebase 라이브러리 버전 관리 (매우 권장)
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1")) // 2025년 6월 현재 최신 안정 버전
+    // Firebase Analytics (선택 사항, 필요 시 추가)
+    implementation("com.google.firebase:firebase-analytics")
+
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
-    implementation libs.gridlayout
-    implementation libs.firebase.firestore // ✨ Firestore 의존성은 유지
-    implementation libs.firebase.auth // ✨ Auth 의존성은 유지
+    implementation libs.gridlayout // 기존 gridlayout 유지
+
+    // Firebase Core, Firestore, Storage, Auth는 BOM으로 버전 관리
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-auth") // Auth 의존성
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
-    implementation "com.google.android.material:material:1.12.0"
+    // Google Maps SDK 의존성 (기존 버전 유지)
+    implementation "com.google.android.gms:play-services-maps:18.2.0"
 
-    implementation 'com.google.android.gms:play-services-maps:18.2.0'
+    // 이미지 로딩 라이브러리: Glide 추가
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
-    // ✨ Room Persistence Library 의존성 제거
+    // Room Persistence Library 의존성 (제거됨 - 주석 유지 또는 완전히 삭제)
     // implementation "androidx.room:room-runtime:2.6.1"
     // annotationProcessor "androidx.room:room-compiler:2.6.1"
 }

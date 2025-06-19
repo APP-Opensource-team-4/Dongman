@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="24dp"
@@ -9,7 +10,6 @@
     android:paddingTop="50dp"
     android:background="#ffffff">
 
-    <!-- 뒤로가기만 있는 툴바 (상단 고정) -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
@@ -22,46 +22,70 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 사진 업로드 박스: 툴바 '아래'에만 붙임 -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/box_photo"
-        android:layout_width="72dp"
-        android:layout_height="88dp"
-        android:background="@drawable/shape_stroke_round"
+    <LinearLayout
+        android:id="@+id/layout_photo_upload"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         android:layout_marginTop="20dp">
 
-        <ImageButton
-            android:id="@+id/btn_add_photo"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="4dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="사진 추가"
-            android:src="@drawable/camera_logo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/box_add_photo"
+            android:layout_width="72dp"
+            android:layout_height="88dp"
+            android:background="@drawable/shape_stroke_round"
+            android:layout_marginEnd="8dp">
 
-        <TextView
-            android:id="@+id/tv_photo_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0/5"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_add_photo" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageButton
+                android:id="@+id/btn_add_photo"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="사진 추가"
+                android:src="@drawable/camera_logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_photo_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0/5"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_add_photo" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/layout_image_previews"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
 
     <TextView
+        android:id="@+id/tv_title_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="제목"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/box_photo"
+        app:layout_constraintTop_toBottomOf="@id/layout_photo_upload"
         android:layout_marginTop="16dp"/>
 
     <EditText
@@ -73,10 +97,9 @@
         android:paddingStart="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/box_photo"
-        android:layout_marginTop="40dp"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_title_label"
+        android:layout_marginTop="4dp"/>
 
-    <!-- ───── 시간 & 모집 인원 ───── -->
     <TextView
         android:id="@+id/tv_time"
         android:layout_width="wrap_content"
@@ -122,7 +145,6 @@
         app:layout_constraintHorizontal_weight="1"
         android:layout_marginStart="12dp"/>
 
-    <!-- ───── 장소 ───── -->
     <TextView
         android:id="@+id/tv_location"
         android:layout_width="wrap_content"
@@ -145,7 +167,6 @@
         app:layout_constraintTop_toBottomOf="@id/tv_location"
         android:layout_marginTop="4dp"/>
 
-    <!-- ───── 모임 소개 ───── -->
     <TextView
         android:id="@+id/tv_intro"
         android:layout_width="wrap_content"
@@ -170,18 +191,16 @@
         app:layout_constraintTop_toBottomOf="@id/tv_intro"
         android:layout_marginTop="4dp"/>
 
-    <!-- ───── 작성 완료 버튼 ───── -->
     <Button
         android:id="@+id/btn_submit"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="-70dp"
+        android:layout_marginBottom="24dp"
         android:backgroundTint="#424242"
         android:text="작성 완료"
         android:textColor="#FFFFFF"
         app:cornerRadius="8dp"
-        app:layout_constraintBottom_toBottomOf="@id/et_intro"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

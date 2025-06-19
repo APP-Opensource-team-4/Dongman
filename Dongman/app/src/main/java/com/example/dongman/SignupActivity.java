@@ -1,8 +1,11 @@
 package com.example.dongman;
 
+import android.content.Context; // Context import 추가
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.*;
+import android.view.View; // View import 추가 (requestFocus/showSoftInput 사용 시 필요)
+import android.view.inputmethod.InputMethodManager; // InputMethodManager import 추가
+import android.widget.*; // 기존에 * 로 되어있지만 명시적으로 EditText, Toast 등 추가 가능
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -13,7 +16,8 @@ public class SignupActivity extends AppCompatActivity {
 
     private EditText idEt,pwEt,pw2Et,nameEt,phoneEt,codeEt;
 
-    @Override protected void onCreate(Bundle s) {
+    @Override
+    protected void onCreate(Bundle s) {
         super.onCreate(s);
         setContentView(R.layout.activity_signup);
         ((Toolbar)findViewById(R.id.toolbar)).setNavigationOnClickListener(v->finish());
@@ -24,6 +28,18 @@ public class SignupActivity extends AppCompatActivity {
         nameEt = findViewById(R.id.editName);
         phoneEt= findViewById(R.id.editPhone);
         codeEt = findViewById(R.id.editCode);
+
+        // ✨ Activity 시작 시 idEt (이메일 입력창)에 포커스를 주고 키보드 띄우기
+        if (idEt != null) {
+            idEt.requestFocus(); // 이메일 입력창에 포커스를 요청
+
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                // 키보드를 강제로 표시
+                imm.showSoftInput(idEt, InputMethodManager.SHOW_IMPLICIT);
+            }
+        }
+
 
         findViewById(R.id.btnSignUp).setOnClickListener(v -> {
             String id=idEt.getText().toString().trim();
