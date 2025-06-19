@@ -1,59 +1,63 @@
+// MainActivity.java
 package com.example.dongman;
 
-import android.app.Activity;
+import android.app.Activity; // Import for Activity.RESULT_OK
 import android.content.Intent;
-import android.content.SharedPreferences; // 더미 데이터 로직에서 사용되던 SharedPreferences는 이제 필요 없을 수 있음.
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView; // Added for filter/tab TextViews
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+import androidx.activity.result.ActivityResultLauncher; // Added for ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts; // Added for ActivityResultContracts
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog; // Added for AlertDialog
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException; // Added for FirebaseFirestoreException
+import com.google.firebase.firestore.ListenerRegistration; // Added for ListenerRegistration
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot; // Added for QuerySnapshot
 
 import java.util.ArrayList;
-import java.util.Collections; // 더미 데이터에서 사용되던 Collections는 이제 필요 없을 수 있음.
-// import java.util.Comparator; // 더미 데이터에서 사용되던 Comparator는 이제 필요 없을 수 있음.
 import java.util.List;
-// import java.util.Random; // 더미 데이터에서 사용되던 Random는 이제 필요 없을 수 있음.
-// import java.util.Date; // 더미 데이터에서 사용되던 Date는 이제 필요 없을 수 있음.
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.FirebaseAuth; // Added for FirebaseAuth
+import com.google.firebase.auth.FirebaseUser; // Added for FirebaseUser
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "MainActivity"; // TAG for logging
 
-    /* 리스트 데이터 */
-    private final List<Post> meetingPosts = new ArrayList<>();
-    private MeetingAdapter adapter;
-
-    /* Firestore 인스턴스 */
     private FirebaseFirestore db;
-    private ListenerRegistration firestoreListener;
+    private RecyclerView recyclerView;
+    private MeetingAdapter adapter;
+    private final List<Post> postList = new ArrayList<>(); // Renamed from meetingPosts for consistency
+    private ProgressBar loadingBar;
+    private ListenerRegistration firestoreListener; // Firestore real-time listener
 
-    /* 중간 필터 / 상단 탭 */
+    // Filter and Tab UI elements
     private TextView btnLatest, btnPopular, btnViews, btnNearby;
     private TextView menuNew, menuRecommend;
-    private TextView currentFilter, currentTab;
+    private TextView currentFilter;
+    private TextView currentTab;
 
-    /* 글쓰기 결과 */
+    // Bottom Navigation
+    private LinearLayout navHome, navFriend, navChat, navProfile;
+
+    // Write post button
+    private ExtendedFloatingActionButton btnWrite;
+
+    /* Write result launcher */
     private final ActivityResultLauncher<Intent> writeLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), r -> {
                 Log.d(TAG, "writeLauncher result received.");
@@ -63,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 if (r.getResultCode() == Activity.RESULT_OK) {
                     Toast.makeText(this, "게시물이 성공적으로 작성되었습니다!", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "PostWriteActivity completed successfully. Post list should auto-refresh.");
+                    // No need to manually reload, listener handles it
                 } else {
                     Log.w(TAG, "ActivityResult did not return RESULT_OK. Result Code: " + r.getResultCode());
                     Toast.makeText(this, "게시물 작성 취소 또는 오류 발생.", Toast.LENGTH_SHORT).show();
@@ -70,28 +75,30 @@ public class MainActivity extends AppCompatActivity {
             });
 
     @Override
-    protected void onCreate(Bundle s) {
-        super.onCreate(s);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         db = FirebaseFirestore.getInstance();
 
-        bindViews();
-        attachListeners();
-        setupRecycler();
+        recyclerView = findViewById(R.id.recycler_view);
+        loadingBar = findViewById(R.id.loading_bar);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new MeetingAdapter(postList, this::onPostClick);
+        recyclerView.setAdapter(adapter);
+
+        btnWrite = findViewById(R.id.btn_write);
+        btnWrite.setOnClickListener(v -> safeLaunch(PostWriteActivity.class));
+
+        bindViews(); // Initialize filter and tab TextViews
+        attachListeners(); // Attach listeners to filter and tab TextViews
         setupBottomNavigation();
-
-        ExtendedFloatingActionButton fabWrite = findViewById(R.id.btn_write);
-        fabWrite.setOnClickListener(v -> safeLaunch(PostWriteActivity.class));
-
-        // 더미 데이터 생성 로직은 이제 제거됩니다.
-        // 앱 시작 시 로그인 상태 확인 및 더미 데이터 생성/확인 로직도 제거.
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        startListeningForPosts();
+        startListeningForPosts(); // Start listening for real-time updates
     }
 
     @Override
@@ -104,44 +111,42 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // savePostToFirestore 메서드는 PostWriteActivity에서 호출될 것이므로 유지.
-    // 하지만 MainActivity에서 직접적으로 더미 포스트를 저장할 필요는 없어졌습니다.
-    private void savePostToFirestore(Post post) {
-        Log.d(TAG, "Attempting to save post to Firestore: " + post.getTitle());
-
-        db.collection("posts")
-                .add(post)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                })
-                .addOnFailureListener(e -> {
-                    Log.w(TAG, "Error adding document: " + e.getMessage(), e);
-                    Toast.makeText(MainActivity.this, "게시물 저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
-
     private void startListeningForPosts() {
         if (firestoreListener != null) {
             firestoreListener.remove();
             Log.d(TAG, "Existing Firestore listener removed before new one.");
         }
 
+        loadingBar.setVisibility(View.VISIBLE);
         Query baseQuery = db.collection("posts");
 
+        // Apply tab filtering
         if (currentTab == menuNew) {
             baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
         } else if (currentTab == menuRecommend) {
+            // For recommendation, you might want a different logic or just default to latest
             baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
         }
 
+        // Apply filter buttons (example logic, extend as needed)
         if (currentFilter == btnLatest) {
-            // No additional filter needed if already ordered by timestamp
+            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
         } else if (currentFilter == btnPopular) {
-            // Example: baseQuery = baseQuery.orderBy("likes", Query.Direction.DESCENDING).limit(10);
+            // Example: Order by a 'likes' field or similar for popularity
+            // baseQuery = baseQuery.orderBy("likes", Query.Direction.DESCENDING);
+            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING); // Fallback
+            Toast.makeText(this, "인기순 필터 (구현 예정)", Toast.LENGTH_SHORT).show();
         } else if (currentFilter == btnViews) {
-            // Example: baseQuery = baseQuery.orderBy("views", Query.Direction.DESCENDING).limit(10);
+            // Example: Order by a 'views' field
+            // baseQuery = baseQuery.orderBy("views", Query.Direction.DESCENDING);
+            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING); // Fallback
+            Toast.makeText(this, "조회순 필터 (구현 예정)", Toast.LENGTH_SHORT).show();
         } else if (currentFilter == btnNearby) {
-            // Example: baseQuery = baseQuery.whereEqualTo("location", "청주시");
+            // Example: Filter by location (requires more complex logic for actual "nearby")
+            // For now, let's just show a toast or filter by a specific location
+            // baseQuery = baseQuery.whereEqualTo("location", "청주시");
+            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING); // Fallback
+            Toast.makeText(this, "가까운순 필터 (구현 예정)", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -149,50 +154,49 @@ public class MainActivity extends AppCompatActivity {
             if (e != null) {
                 Log.w(TAG, "Listen failed.", e);
                 Toast.makeText(this, "게시물 로딩 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                loadingBar.setVisibility(View.GONE);
                 return;
             }
 
             if (snapshots != null) {
-                meetingPosts.clear();
+                postList.clear();
                 for (DocumentSnapshot document : snapshots.getDocuments()) {
                     Post post = document.toObject(Post.class);
                     if (post != null) {
                         post.setId(document.getId());
-                        meetingPosts.add(post);
+                        // Ensure imageUrls list is initialized if it comes null from Firestore
+                        if (post.getImageUrls() == null) {
+                            post.setImageUrls(new ArrayList<>());
+                        }
+                        postList.add(post);
                     } else {
                         Log.w(TAG, "Failed to convert document " + document.getId() + " to Post object.");
                     }
                 }
                 adapter.notifyDataSetChanged();
-                Log.d(TAG, "Posts loaded/updated in UI: " + meetingPosts.size() + " items");
+                loadingBar.setVisibility(View.GONE);
+                Log.d(TAG, "Posts loaded/updated in UI: " + postList.size() + " items");
 
-                if (!meetingPosts.isEmpty()) {
-                    ((RecyclerView) findViewById(R.id.rv_meetings)).scrollToPosition(0);
+                if (!postList.isEmpty()) {
+                    recyclerView.scrollToPosition(0); // Scroll to top on update
                 }
             }
         });
     }
 
-    /* ───────── RecyclerView ───────── */
-    private void setupRecycler() {
-        RecyclerView rv = findViewById(R.id.rv_meetings);
-        rv.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new MeetingAdapter(meetingPosts,
-                v -> {
-                    Post clickedPost = (Post) v.getTag();
-                    if (clickedPost != null) {
-                        Intent detailIntent = new Intent(this, DetailActivity.class);
-                        detailIntent.putExtra("post", clickedPost);
-                        startActivity(detailIntent);
-                    } else {
-                        Log.e(TAG, "Clicked post is null. Check adapter's setTag.");
-                        Toast.makeText(this, "게시물 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-        rv.setAdapter(adapter);
+    private void onPostClick(View view) {
+        Post clickedPost = (Post) view.getTag();
+        if (clickedPost != null && clickedPost.getId() != null) {
+            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+            intent.putExtra("postId", clickedPost.getId()); // Pass postId
+            startActivity(intent);
+        } else {
+            Log.e(TAG, "Clicked post or its ID is null. Check adapter's setTag.");
+            Toast.makeText(this, "게시물 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    /* ───────── 버튼 바인딩/리스너 ───────── */
+    /* ───────── UI Binding and Listeners for Filters/Tabs ───────── */
     private void bindViews() {
         btnLatest  = findViewById(R.id.btn_latest);
         btnPopular = findViewById(R.id.btn_popular);
@@ -202,14 +206,15 @@ public class MainActivity extends AppCompatActivity {
         menuNew       = findViewById(R.id.menu_new);
         menuRecommend = findViewById(R.id.menu_recommend);
 
+        // Set initial selected filter and tab
         currentFilter = btnLatest;
-        currentTab    = menuRecommend;
+        currentTab    = menuRecommend; // Or menuNew, based on default view
     }
 
     private void attachListeners() {
         View.OnClickListener filterListener = v -> {
             changeFilter((TextView) v);
-            startListeningForPosts();
+            startListeningForPosts(); // Reload posts based on new filter
         };
         btnLatest.setOnClickListener(filterListener);
         btnPopular.setOnClickListener(filterListener);
@@ -218,22 +223,23 @@ public class MainActivity extends AppCompatActivity {
 
         View.OnClickListener tabListener = v -> {
             changeTab((TextView) v);
-            startListeningForPosts();
+            startListeningForPosts(); // Reload posts based on new tab
         };
         menuNew.setOnClickListener(tabListener);
         menuRecommend.setOnClickListener(tabListener);
 
+        // Apply initial styles
         changeFilter(currentFilter);
         changeTab(currentTab);
     }
 
     private void changeFilter(TextView n) {
         if (currentFilter != null) {
-            currentFilter.setBackgroundColor(0xFFF5F5F5);
-            currentFilter.setTextColor(0xFF666666);
+            currentFilter.setBackgroundColor(0xFFF5F5F5); // Light gray
+            currentFilter.setTextColor(0xFF666666);      // Dark gray text
         }
-        n.setBackgroundColor(0xFF000000);
-        n.setTextColor(0xFFFFFFFF);
+        n.setBackgroundColor(0xFF000000); // Black background
+        n.setTextColor(0xFFFFFFFF);      // White text
         currentFilter = n;
     }
 
@@ -247,34 +253,42 @@ public class MainActivity extends AppCompatActivity {
         currentTab = n;
     }
 
-    /* ───────── 하단 네비 ───────── */
+    /* ───────── Bottom Navigation ───────── */
     private void setupBottomNavigation() {
-        findViewById(R.id.nav_home   ).setOnClickListener(v -> {});
-        findViewById(R.id.nav_friend ).setOnClickListener(v -> safeLaunch(BoardActivity.class));
-        findViewById(R.id.nav_chat   ).setOnClickListener(v -> safeLaunch(ChatActivity.class));
-        findViewById(R.id.nav_profile).setOnClickListener(v -> safeLaunch(ProfileActivity.class));
+        navHome = findViewById(R.id.nav_home);
+        navFriend = findViewById(R.id.nav_friend);
+        navChat = findViewById(R.id.nav_chat);
+        navProfile = findViewById(R.id.nav_profile);
+
+        navHome.setOnClickListener(v -> {
+            // Currently on Home, do nothing or refresh if needed
+            Toast.makeText(this, "홈", Toast.LENGTH_SHORT).show();
+        });
+
+        navFriend.setOnClickListener(v -> safeLaunch(BoardActivity.class));
+        navChat.setOnClickListener(v -> safeLaunch(ChatActivity.class));
+        navProfile.setOnClickListener(v -> safeLaunch(ProfileActivity.class));
     }
 
-    private void safeLaunch(Class<?> c){
-        // Pass 'this' (the MainActivity context) to the isLoggedIn method.
-        if(LoginHelper.isLoggedIn(this)){
+    private void safeLaunch(Class<?> c) {
+        if (LoginHelper.isLoggedIn(this)) {
             if (c.equals(PostWriteActivity.class)) {
                 writeLauncher.launch(new Intent(this, c));
             } else {
                 startActivity(new Intent(this, c));
             }
-        }else{
+        } else {
             new AlertDialog.Builder(this)
                     .setTitle("로그인이 필요합니다")
                     .setMessage("해당 기능은 로그인 후 이용할 수 있습니다.")
                     .setPositiveButton("로그인하기",
-                            (d,w)->startActivity(new Intent(this,LoginActivity.class)))
-                    .setNegativeButton("닫기",null)
+                            (d, w) -> startActivity(new Intent(this, LoginActivity.class)))
+                    .setNegativeButton("닫기", null)
                     .show();
         }
     }
 
-    /* ───────── 더미 데이터 (이제 필요 없음) ───────── */
-    // seedMeetingData 메서드와 관련된 필드 및 호출을 모두 제거합니다.
-    // 기존 seedMeetingData() 메서드 자체는 이 파일에서 제거됩니다.
+    private void toast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
 }

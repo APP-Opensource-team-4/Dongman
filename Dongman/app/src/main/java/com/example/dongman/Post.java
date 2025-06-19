@@ -1,3 +1,4 @@
+// Post.java
 package com.example.dongman;
 
 import com.google.firebase.firestore.ServerTimestamp;
@@ -8,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Post implements Serializable {
-    private String id; // Firestore 문서 ID (수동으로 설정)
+    private String id; // Firestore document ID (set manually)
     private String title;
     private String content;
     private String location;
@@ -17,15 +18,14 @@ public class Post implements Serializable {
     private List<String> imageUrls;
     @ServerTimestamp
     private Date timestamp;
-
-    private String hostUid;    // 모임 담당자의 Firebase User ID (UID)
-    private String hostName;   // 모임 담당자의 이름 (표시용)
+    private String hostUid;    // Firebase User ID (UID) of the meeting host
+    private String hostName;   // Name of the meeting host (for display)
 
     public Post() {
         this.imageUrls = new ArrayList<>();
     }
 
-    public Post(String title, String time, int count, String location, String content, List<String> imageUrls, Date timestamp) {
+    public Post(String title, String time, int count, String location, String content, List<String> imageUrls, Date timestamp, String hostUid, String hostName) {
         this.title = title;
         this.time = time;
         this.count = count;
@@ -33,8 +33,11 @@ public class Post implements Serializable {
         this.content = content;
         this.imageUrls = imageUrls != null ? imageUrls : new ArrayList<>();
         this.timestamp = timestamp;
+        this.hostUid = hostUid;
+        this.hostName = hostName;
     }
 
+    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -113,5 +116,10 @@ public class Post implements Serializable {
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
+    }
+
+    // Helper method to get the first image URL
+    public String getFirstImageUrl() {
+        return (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : null;
     }
 }

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- 🔹 스타일 정의 -->
     <style name="SportsButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -8,9 +10,12 @@
         <item name="android:textSize">14sp</item>
         <item name="android:backgroundTint">#EFEFEF</item>
         <item name="android:textColor">#333333</item>
-        <item name="cornerRadius">20dp</item>
     </style>
+
+    <!-- 🔹 앱 이름 -->
     <string name="app_name">동만이</string>
+
+    <!-- 🔹 시간 선택 항목 -->
     <string-array name="time_options">
         <item>오전 9시</item>
         <item>오전 10시</item>
@@ -23,4 +28,13 @@
         <item>오후 5시</item>
         <item>오후 6시</item>
     </string-array>
+
+    <!-- 🔹 Detail 화면용 문자열 -->
+    <string name="title_weekly">함께 운동해요 동만이 모임 OPEN</string>
+    <string name="meta_weekly">청주시 | 운동/친목 | 멤버 38명</string>
+    <string name="desc_cover_image">모임 대표 이미지를 보여주는 영역입니다</string>
+    <string name="desc_favorite">이 모임을 찜 목록에 추가합니다</string>
+    <string name="btn_join">모임 가입하기</string>
+    <string name="desc_weekly_detail">이 모임은 다양한 사람들과 매주 색다른 운동과 활동을 함께 즐기는 커뮤니티입니다 카페 맛집 탐방부터 취미 공유까지 단순한 모임을 넘어서 유대감 있는 네트워킹을 만들어갑니다 가입 시 간단한 인사말을 남겨주세요 비밀번호는 확인 후 전달됩니다 가입 후 바로 탈퇴하는 경우 향후 가입이 제한될 수 있습니다 함께 지켜야 할 약속을 꼭 확인해 주세요</string>
+
 </resources>
