@@ -21,20 +21,17 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.DocumentChange; // DocumentChange import는 사용되므로 유지
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.DocumentSnapshot;
-// FieldValue는 더미 데이터 저장 시 필요하지 않을 수 있지만, 다른 곳에서 사용 가능성을 위해 유지
-import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FieldValue; // FieldValue 임포트 (사용하지 않을 수도 있지만 필요에 따라)
 
 import java.util.ArrayList;
-import java.util.Collections; // Collections.sort 사용을 위해 유지
-import java.util.Comparator; // Comparator 사용을 위해 유지
-import java.util.HashMap; // Map 사용을 위해 유지 (현재 코드에서 필요 없음. 제거 고려)
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;   // Map 사용을 위해 유지 (현재 코드에서 필요 없음. 제거 고려)
 import java.util.Random;
 import java.util.Date;
 
@@ -44,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     /* 리스트 데이터 */
     private final List<Post> meetingPosts = new ArrayList<>();
-    private MeetingAdapter adapter; // MeetingAdapter 클래스가 올바르게 정의되어 있어야 함
+    private MeetingAdapter adapter;
 
     /* Firestore 인스턴스 */
     private FirebaseFirestore db;
@@ -65,11 +62,10 @@ public class MainActivity extends AppCompatActivity {
                 // PostWriteActivity에서 이미 Firestore에 저장이 완료되었으므로,
                 // MainActivity에서는 별도로 Post 객체를 받아 다시 저장할 필요가 없습니다.
                 // PostWriteActivity가 성공적으로 종료되었는지 (RESULT_OK)만 확인하면 됩니다.
-                if (r.getResultCode() == RESULT_OK) {
+                if (r.getResultCode() == Activity.RESULT_OK) { // Changed to Activity.RESULT_OK for clarity
                     Toast.makeText(this, "게시물이 성공적으로 작성되었습니다!", Toast.LENGTH_SHORT).show();
                     // Firestore addSnapshotListener가 onStart에서 시작되고, 데이터 변경 시
                     // 자동으로 UI를 업데이트하므로 명시적인 새로고침 호출은 불필요합니다.
-                    // 만약 즉각적인 반영이 필요하다면 loadPostsFromFirestore() 등을 호출할 수 있습니다.
                     Log.d(TAG, "PostWriteActivity completed successfully. Post list should auto-refresh.");
                 } else {
                     Log.w(TAG, "ActivityResult did not return RESULT_OK. Result Code: " + r.getResultCode());
@@ -90,24 +86,8 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation();
 
         ExtendedFloatingActionButton fabWrite = findViewById(R.id.btn_write);
-        fabWrite.setOnClickListener(v ->
-                // safeLaunch는 로그인 체크만 하고, 실제 액티비티 시작은 writeLauncher로 합니다.
-                safeLaunch(PostWriteActivity.class)); // 이 부분에서 writeLauncher.launch(Intent)를 호출해야 함
-
-        // safeLaunch를 다음과 같이 수정해야 합니다.
-        // fabWrite.setOnClickListener(v -> {
-        //     if(LoginHelper.isLoggedIn(this)){
-        //         writeLauncher.launch(new Intent(this, PostWriteActivity.class));
-        //     } else {
-        //         new AlertDialog.Builder(this)
-        //                 .setTitle("로그인이 필요합니다")
-        //                 .setMessage("해당 기능은 로그인 후 이용할 수 있습니다.")
-        //                 .setPositiveButton("로그인하기", (d,w)->startActivity(new Intent(this,LoginActivity.class)))
-        //                 .setNegativeButton("닫기",null)
-        //                 .show();
-        //     }
-        // });
-
+        // fabWrite 클릭 시 safeLaunch를 통해 로그인 체크 후 PostWriteActivity를 writeLauncher로 시작
+        fabWrite.setOnClickListener(v -> safeLaunch(PostWriteActivity.class));
 
         // 앱 첫 실행 시에만 더미 데이터를 Firestore에 추가하도록 로직 수정
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
@@ -118,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful() && task.getResult().isEmpty()) {
                     Log.d(TAG, "Firestore 'posts' collection is empty. Seeding dummy data.");
                     seedMeetingData();
-                    // 더미 데이터 생성 후 플래그 저장 (commit() 대신 apply() 권장)
+                    // 더미 데이터 생성 후 플래그 저장 (apply() 권장)
                     prefs.edit().putBoolean("hasSeeded", true).apply();
                 } else if (task.isSuccessful()) {
                     Log.d(TAG, "Firestore 'posts' collection is not empty. No seeding required. Count: " + task.getResult().size());
@@ -157,14 +137,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Post 객체를 직접 Firestore에 추가합니다.
         // Post 클래스에 public 필드 또는 public getter/setter가 있다면 Firestore가 자동으로 매핑합니다.
-        // PostWriteActivity에서 사용하는 FieldValue.serverTimestamp() 대신 Date 객체를 사용합니다.
         // 더미 데이터에는 new Date()로 현재 시간을 넣습니다.
         db.collection("posts")
                 .add(post) // Post 객체를 직접 저장
                 .addOnSuccessListener(documentReference -> {
                     Log.d(TAG, "Dummy DocumentSnapshot added with ID: " + documentReference.getId());
                     // 더미 데이터 저장 시에는 토스트 메시지가 불필요할 수 있습니다.
-                    // Toast.makeText(MainActivity.this, "더미 게시물 저장 완료!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     Log.w(TAG, "Error adding dummy document: " + e.getMessage(), e);
@@ -181,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Existing Firestore listener removed before new one.");
         }
 
-        // TODO: 필터 및 탭 선택에 따라 쿼리 변경 로직 추가
+        // 필터 및 탭 선택에 따라 쿼리 변경 로직 추가
         Query baseQuery = db.collection("posts");
 
         // 현재 선택된 탭 (menuNew, menuRecommend)에 따른 정렬
@@ -196,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
 
         // 현재 선택된 필터 (btnLatest, btnPopular, btnViews, btnNearby)에 따른 필터링 (where)
         // 이 부분은 Post 클래스의 필드와 일치하게 수정하거나, Firestore 문서에 추가 필드를 정의해야 합니다.
-        // 현재 Post 클래스에는 'location', 'time', 'count' 등의 필드가 명확히 있습니다.
         if (currentFilter == btnLatest) {
             // 이미 timestamp 내림차순으로 정렬되므로 추가 필터링은 필요 없을 수 있습니다.
         } else if (currentFilter == btnPopular) {
@@ -220,23 +197,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (snapshots != null) {
-                // 실시간 변경 사항을 DocumentChange로 처리하여 효율성을 높입니다.
-                // 이는 UI 목록을 업데이트하는 더 나은 방법입니다.
-                // Collections.sort는 Firestore 쿼리에서 orderBy를 사용하고 있다면 필요 없습니다.
-                // 만약 Firestore 쿼리에 orderBy가 없다면 여기서 정렬을 수행해야 합니다.
-                // 현재 baseQuery에 orderBy("timestamp", Query.Direction.DESCENDING)가 있으므로,
-                // List에 추가/수정/삭제 후 추가적인 정렬은 필요 없을 가능성이 높습니다.
-                // (다만 DocumentChange 처리 방식에 따라 정렬이 깨질 수도 있으니 테스트 필요)
-
-                // 일단 모든 변경사항을 반영하기 전에 meetingPosts를 비우고 다시 채우는 것은
-                // DocumentChange의 효율성을 떨어뜨리지만, 데이터 정합성을 가장 쉽게 보장합니다.
-                // 더 최적화된 방법은 DocumentChange.Type에 따라 개별 항목을 추가/수정/삭제하는 것입니다.
-                meetingPosts.clear(); // 변경 전 기존 리스트를 비웁니다.
+                // 기존 리스트를 비우고 변경사항을 반영하는 방식 (간단하나 효율은 떨어짐)
+                meetingPosts.clear();
                 for (DocumentSnapshot document : snapshots.getDocuments()) {
                     Post post = document.toObject(Post.class); // Firestore 문서 -> Post 객체로 변환
                     if (post != null) {
                         post.setId(document.getId()); // 문서 ID도 Post 객체에 저장
                         meetingPosts.add(post);
+                    } else {
+                        Log.w(TAG, "Failed to convert document " + document.getId() + " to Post object.");
                     }
                 }
                 // Firestore 쿼리에 orderBy가 있다면, 아래 수동 정렬은 필요 없습니다.

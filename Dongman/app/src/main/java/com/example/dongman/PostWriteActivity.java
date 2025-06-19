@@ -301,18 +301,23 @@ public class PostWriteActivity extends AppCompatActivity {
     }
 
     private void savePostToFirestore(String title, String time, int count, String location, String content, List<String> imageUrls) {
+        // ⭐⭐⭐ 이 라인을 추가하거나 확인해야 합니다. ⭐⭐⭐
         Post newPost = new Post(title, time, count, location, content, imageUrls, new Date());
 
         db.collection("posts")
-                .add(newPost)
+                .add(newPost) // 이제 newPost가 초기화되어 에러가 사라집니다.
                 .addOnSuccessListener(documentReference -> {
-                    // Firestore 문서 ID를 Post 객체에 저장 (선택 사항)
-                    newPost.setId(documentReference.getId()); // Post.java에 setId() 추가 필요
+                    // newPost.setId(documentReference.getId()); // 이 부분은 newPost를 final로 선언하지 않았거나, 리스너 내부에서 접근할 수 있도록 newPost를 final로 만들어야 할 수 있습니다.
+                    // 현재 addOnSuccessListener 안에서 newPost를 사용하려면, newPost를 final 또는 effectively final로 선언해야 합니다.
+                    // 만약 setId를 필수로 해야 한다면, newPost를 final로 선언하거나, 콜백 밖에서 id를 업데이트하는 다른 방법을 찾아야 합니다.
+                    // 하지만 일반적으로 setId는 여기서는 필수가 아닙니다. Firestore 문서 ID는 documentReference.getId()로 이미 알고 있기 때문입니다.
                     Toast.makeText(this, "게시물 작성 완료!", Toast.LENGTH_SHORT).show();
-                    finish(); // Activity 종료
+                    setResult(Activity.RESULT_OK);
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "게시물 작성 실패: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    finish();
                 });
     }
 }

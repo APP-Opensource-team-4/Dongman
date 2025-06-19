@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.dongman">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
@@ -20,7 +17,8 @@
         android:label="동만이"
         android:roundIcon="@drawable/dongman_icon"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Dongman">
+        android:theme="@style/Theme.Dongman"
+        tools:targetApi="31">
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

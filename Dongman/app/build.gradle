@@ -1,19 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
-    // Room 플러그인은 여기서 제거되었으므로 그대로 유지
 }
 
 android {
     namespace 'com.example.dongman'
-    // compileSdk를 35로 업데이트
-    compileSdk 35
+    compileSdk 35 // Android 14 (API 34) 이상 요구사항에 맞춰 35로 통일
+    // 또는 compileSdk 34 (안정 버전)
 
     defaultConfig {
         applicationId "com.example.dongman"
         minSdk 24
-        // targetSdk도 compileSdk와 동일하게 35로 업데이트하는 것이 좋습니다.
-        targetSdk 35
+        targetSdk 35 // compileSdk와 동일하게
         versionCode 1
         versionName "1.0"
 
@@ -27,41 +25,41 @@ android {
         }
     }
     compileOptions {
-        // Java 버전을 17로 업데이트
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_17 // Java 17
+        targetCompatibility JavaVersion.VERSION_17 // Java 17
     }
 }
 
 dependencies {
     // Firebase BOM을 사용하여 Firebase 라이브러리 버전 관리 (매우 권장)
     implementation(platform("com.google.firebase:firebase-bom:33.1.1")) // 2025년 6월 현재 최신 안정 버전
-    // Firebase Analytics (선택 사항, 필요 시 추가)
-    implementation("com.google.firebase:firebase-analytics")
+
+    // Firebase Core (BOM 사용 시 명시적 버전 필요 없음)
+    implementation("com.google.firebase:firebase-analytics") // 필요시 추가
 
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
-    implementation libs.gridlayout // 기존 gridlayout 유지
+    implementation libs.gridlayout
 
-    // Firebase Core, Firestore, Storage, Auth는 BOM으로 버전 관리
+    // Firebase 서비스 (BOM 사용 시 버전 명시 없음)
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
-    implementation("com.google.firebase:firebase-auth") // Auth 의존성
+    implementation("com.google.firebase:firebase-auth")
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
-    // Google Maps SDK 의존성 (기존 버전 유지)
-    implementation "com.google.android.gms:play-services-maps:18.2.0"
+    // Google Maps SDK
+    implementation "com.google.android.gms:play-services-maps:18.2.0" // 최신 안정 버전 확인 후 업데이트 가능
 
-    // 이미지 로딩 라이브러리: Glide 추가
+    // 이미지 로딩 라이브러리: Glide
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
-    // Room Persistence Library 의존성 (제거됨 - 주석 유지 또는 완전히 삭제)
+    // Room Persistence Library 의존성은 제거됨 (확인용 주석)
     // implementation "androidx.room:room-runtime:2.6.1"
     // annotationProcessor "androidx.room:room-compiler:2.6.1"
 }

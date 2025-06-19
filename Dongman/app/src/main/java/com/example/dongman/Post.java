@@ -32,10 +32,7 @@ public class Post implements Serializable {
         this.timestamp = timestamp;
     }
 
-    // Firestore가 필드를 자동으로 매핑할 때 public 필드나 public getter/setter를 사용합니다.
-    // 여기서는 필드가 public이므로 별도의 getter/setter는 필수는 아닙니다.
-    // 하지만, 일관된 데이터 접근을 위해 getter/setter를 사용하는 것을 권장합니다.
-
+    // 모든 필드에 대한 Getter와 Setter (Firestore POJO 매핑을 위해 권장)
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
