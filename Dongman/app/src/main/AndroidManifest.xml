@@ -15,9 +15,9 @@
     <application
         android:name=".DongmanApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/dongman_icon"
         android:label="동만이"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/dongman_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.Dongman"
         tools:targetApi="31">

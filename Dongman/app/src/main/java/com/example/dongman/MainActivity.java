@@ -84,7 +84,18 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         loadingBar = findViewById(R.id.loading_bar);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new MeetingAdapter(postList, this::onPostClick);
+        adapter = new MeetingAdapter(postList, v -> {
+            Post clickedPost = (Post) v.getTag();
+            if (clickedPost != null && clickedPost.getId() != null) {
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra("postId", clickedPost.getId());
+                startActivity(intent);
+                Log.d(TAG, "Opening DetailActivity with postId: " + clickedPost.getId());
+            } else {
+                Log.e(TAG, "Clicked post or its ID is null. Check adapter's setTag.");
+                Toast.makeText(MainActivity.this, "게시물 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
         recyclerView.setAdapter(adapter);
 
         btnWrite = findViewById(R.id.btn_write);
@@ -120,35 +131,33 @@ public class MainActivity extends AppCompatActivity {
         loadingBar.setVisibility(View.VISIBLE);
         Query baseQuery = db.collection("posts");
 
-        // Apply tab filtering
-        if (currentTab == menuNew) {
-            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
-        } else if (currentTab == menuRecommend) {
-            // For recommendation, you might want a different logic or just default to latest
-            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
-        }
-
-        // Apply filter buttons (example logic, extend as needed)
-        if (currentFilter == btnLatest) {
-            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
-        } else if (currentFilter == btnPopular) {
-            // Example: Order by a 'likes' field or similar for popularity
+        // 필터와 탭에 따른 정렬 - 중복 orderBy 방지
+        if (currentFilter == btnPopular) {
+            // 인기순 (likes 필드가 있다면)
             // baseQuery = baseQuery.orderBy("likes", Query.Direction.DESCENDING);
-            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING); // Fallback
+            // likes 필드가 없다면 timestamp로 대체
+            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
             Toast.makeText(this, "인기순 필터 (구현 예정)", Toast.LENGTH_SHORT).show();
         } else if (currentFilter == btnViews) {
-            // Example: Order by a 'views' field
+            // 조회순 (views 필드가 있다면)
             // baseQuery = baseQuery.orderBy("views", Query.Direction.DESCENDING);
-            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING); // Fallback
+            // views 필드가 없다면 timestamp로 대체
+            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
             Toast.makeText(this, "조회순 필터 (구현 예정)", Toast.LENGTH_SHORT).show();
         } else if (currentFilter == btnNearby) {
-            // Example: Filter by location (requires more complex logic for actual "nearby")
-            // For now, let's just show a toast or filter by a specific location
-            // baseQuery = baseQuery.whereEqualTo("location", "청주시");
-            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING); // Fallback
+            // 가까운순 (위치 기반 쿼리 구현 예정)
+            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
             Toast.makeText(this, "가까운순 필터 (구현 예정)", Toast.LENGTH_SHORT).show();
+        } else {
+            // 기본값: 최신순 (btnLatest 또는 기타)
+            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
         }
 
+        // Tab filtering (필요시 추가 필터링, 정렬은 하지 않음)
+        if (currentTab == menuRecommend) {
+            // 추천탭에 대한 추가 필터링이 필요하다면 여기에
+            // 예: baseQuery = baseQuery.whereEqualTo("featured", true);
+        }
 
         firestoreListener = baseQuery.addSnapshotListener((snapshots, e) -> {
             if (e != null) {
@@ -183,15 +192,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
     private void onPostClick(View view) {
+        Log.d(TAG, "onPostClick called"); // 디버깅용 로그 추가
+
         Post clickedPost = (Post) view.getTag();
-        if (clickedPost != null && clickedPost.getId() != null) {
-            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-            intent.putExtra("postId", clickedPost.getId()); // Pass postId
-            startActivity(intent);
+
+        if (clickedPost != null) {
+            Log.d(TAG, "Post found: " + clickedPost.getTitle()); // 디버깅용
+
+            if (clickedPost.getId() != null) {
+                Log.d(TAG, "Opening DetailActivity with postId: " + clickedPost.getId());
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra("postId", clickedPost.getId());
+                startActivity(intent);
+            } else {
+                Log.e(TAG, "Post ID is null");
+                Toast.makeText(this, "게시물 ID가 없습니다.", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            Log.e(TAG, "Clicked post or its ID is null. Check adapter's setTag.");
+            Log.e(TAG, "Clicked post is null. Check adapter's setTag.");
             Toast.makeText(this, "게시물 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
         }
     }

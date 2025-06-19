@@ -4,12 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -28,18 +27,16 @@ public class DetailActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private Post currentPost;
 
-    // UI elements
+    // UI elements - 모든 버튼을 View로 선언하여 캐스팅 오류 방지
     private ImageView imgCover;
     private TextView tvDetailTitle;
     private TextView tvDetailMeta;
-    private TextView tvDetailLocation;
+    // private TextView tvDetailLocation; // XML에 없으므로 제거
     private TextView tvDetailContent;
-    private Button chatWithHostButton;
-    private Button btnJoin;
-    private ImageButton btnFavorite;
-
-    // ✅ 추가된 지도 버튼
-    private Button btnMap;
+    private View chatWithHostButton;  // Button 대신 View 사용
+    private View btnJoin;             // Button 대신 View 사용
+    private View btnFavorite;         // AppCompatImageButton 대신 View 사용
+    private View btnMap;              // Button 대신 View 사용
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +51,22 @@ public class DetailActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        // UI binding
+        // UI binding with null checks
         imgCover = findViewById(R.id.img_cover);
         tvDetailTitle = findViewById(R.id.tv_detail_title);
         tvDetailMeta = findViewById(R.id.tv_detail_meta);
+        // tvDetailLocation = findViewById(R.id.tv_detail_location); // XML에 없으므로 제거
         tvDetailContent = findViewById(R.id.tv_detail_content);
         chatWithHostButton = findViewById(R.id.chatWithHostButton);
         btnJoin = findViewById(R.id.btn_join);
-        btnFavorite = findViewById(R.id.btn_favorite);
-        btnMap = findViewById(R.id.btn_map); // ✅ 지도 보기 버튼 바인딩
+//        btnFavorite = findViewById(R.id.btn_favorite);
+        btnMap = findViewById(R.id.btn_map);
+
+        // Null check for critical views
+        if (tvDetailTitle == null) Log.e(TAG, "tvDetailTitle is null - check R.id.tv_detail_title");
+        if (tvDetailMeta == null) Log.e(TAG, "tvDetailMeta is null - check R.id.tv_detail_meta");
+        // if (tvDetailLocation == null) Log.e(TAG, "tvDetailLocation is null - check R.id.tv_detail_location"); // 제거
+        if (tvDetailContent == null) Log.e(TAG, "tvDetailContent is null - check R.id.tv_detail_content");
 
         // 게시물 ID 받기
         String postId = getIntent().getStringExtra("postId");
@@ -160,15 +164,45 @@ public class DetailActivity extends AppCompatActivity {
                 if (currentPost != null) {
                     currentPost.setId(documentSnapshot.getId());
 
-                    tvDetailTitle.setText(currentPost.getTitle());
-                    tvDetailMeta.setText(currentPost.getTime() + " | 멤버 " + currentPost.getCount() + "명");
-                    tvDetailLocation.setText(currentPost.getLocation());
-                    tvDetailContent.setText(currentPost.getContent());
+                    // Set text with null checks
+                    if (tvDetailTitle != null) {
+                        tvDetailTitle.setText(currentPost.getTitle());
+                    }
+                    if (tvDetailMeta != null) {
+                        tvDetailMeta.setText(currentPost.getTime() + " | 멤버 " + currentPost.getCount() + "명 | " + currentPost.getLocation());
+                    }
+                    // location은 meta에 포함시킴 (별도 TextView가 없으므로)
+                    if (tvDetailContent != null) {
+                        tvDetailContent.setText(currentPost.getContent());
+                    }
                     Objects.requireNonNull(getSupportActionBar()).setTitle(currentPost.getTitle());
 
+                    // 이미지 로딩 로그 추가
                     if (currentPost.getImageUrls() != null && !currentPost.getImageUrls().isEmpty()) {
-                        Glide.with(this).load(currentPost.getFirstImageUrl()).into(imgCover);
+                        String imageUrl = currentPost.getImageUrls().get(0);
+                        Log.d(TAG, "Loading image from URL: " + imageUrl);
+                        Log.d(TAG, "Total images: " + currentPost.getImageUrls().size());
+
+                        Glide.with(this)
+                                .load(imageUrl)
+                                .placeholder(R.drawable.placeholder_thumbnail)
+                                .error(R.drawable.camera_logo)
+                                .listener(new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
+                                    @Override
+                                    public boolean onLoadFailed(@Nullable com.bumptech.glide.load.engine.GlideException e, Object model, com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, boolean isFirstResource) {
+                                        Log.e(TAG, "Image load failed: " + e.getMessage());
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onResourceReady(android.graphics.drawable.Drawable resource, Object model, com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, com.bumptech.glide.load.DataSource dataSource, boolean isFirstResource) {
+                                        Log.d(TAG, "Image loaded successfully from: " + dataSource);
+                                        return false;
+                                    }
+                                })
+                                .into(imgCover);
                     } else {
+                        Log.w(TAG, "No image URLs found, using default image");
                         imgCover.setImageResource(R.drawable.camera_logo);
                     }
                 }
