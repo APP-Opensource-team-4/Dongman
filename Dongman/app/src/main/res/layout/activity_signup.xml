@@ -71,7 +71,7 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCheckId"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="0dp"
                     android:text="중복확인"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
@@ -109,7 +109,8 @@
                 android:inputType="textPersonName"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="85dp"/>
 
 <!--            <EditText-->
 <!--                android:id="@+id/editBirth"-->
@@ -137,7 +138,7 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCheckId2"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="0dp"
                     android:text="번호인증"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
@@ -150,7 +151,7 @@
             <EditText
                 android:id="@+id/editCode"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="0dp"
                 android:hint="인증번호"
                 android:inputType="number"
                 android:focusable="true"
