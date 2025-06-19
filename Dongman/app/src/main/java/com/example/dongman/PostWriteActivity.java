@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,13 +24,15 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout; // Keep this import
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -43,6 +46,8 @@ import java.util.Locale;
 
 public class PostWriteActivity extends AppCompatActivity {
 
+    private static final String TAG = "PostWriteActivity";
+
     // UI 요소
     private EditText etTitle, etCount, etLocation, etIntro;
     private Spinner spinnerTime;
@@ -55,6 +60,7 @@ public class PostWriteActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private StorageReference storageRef;
+    private FirebaseAuth mAuth;
 
     // 이미지 업로드를 위한 변수
     private List<Uri> selectedImageUris = new ArrayList<>();
@@ -66,6 +72,11 @@ public class PostWriteActivity extends AppCompatActivity {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    if (selectedImageUris.size() >= MAX_PHOTOS) {
+                        Toast.makeText(this, "최대 " + MAX_PHOTOS + "장까지만 선택할 수 있습니다.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if (result.getData().getClipData() != null) { // 다중 이미지 선택
                         int count = result.getData().getClipData().getItemCount();
                         for (int i = 0; i < count; i++) {
@@ -85,7 +96,7 @@ public class PostWriteActivity extends AppCompatActivity {
                             Toast.makeText(this, "최대 " + MAX_PHOTOS + "장까지만 선택할 수 있습니다.", Toast.LENGTH_SHORT).show();
                         }
                     }
-                    updatePhotoPreviewAndCount();
+                    updatePhotoPreviewAndCount(); // Corrected method name
                 }
             });
 
@@ -111,6 +122,7 @@ public class PostWriteActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+        mAuth = FirebaseAuth.getInstance();
 
         // UI 요소 연결
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -140,7 +152,7 @@ public class PostWriteActivity extends AppCompatActivity {
         btnSubmit.setOnClickListener(v -> handleSubmit());
 
         // 초기 사진 개수 업데이트
-        updatePhotoPreviewAndCount();
+        updatePhotoPreviewAndCount(); // Corrected method name
     }
 
     // 권한 확인 및 요청
@@ -165,11 +177,12 @@ public class PostWriteActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true); // 다중 이미지 선택 허용
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // URI 권한 부여
+        // Corrected: FLAG_GRANT_READ_URI_URI_PERMISSION -> FLAG_GRANT_READ_URI_PERMISSION
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         pickImageLauncher.launch(Intent.createChooser(intent, "이미지 선택"));
     }
 
-    // 사진 미리보기 및 개수 업데이트
+    // 사진 미리보기 및 개수 업데이트 (Corrected method name)
     private void updatePhotoPreviewAndCount() {
         tvPhotoCount.setText(selectedImageUris.size() + "/" + MAX_PHOTOS);
 
@@ -193,28 +206,26 @@ public class PostWriteActivity extends AppCompatActivity {
             Glide.with(this).load(uri).into(previewImageView);
             imageContainer.addView(previewImageView);
 
-            // DELETE BUTTON LOGIC - CORRECTION STARTS HERE
+            // DELETE BUTTON LOGIC
             ImageButton deleteButton = new ImageButton(this);
             deleteButton.setBackgroundResource(android.R.color.transparent);
             deleteButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
 
-            // Correct way to set ConstraintLayout.LayoutParams properties programmatically
             ConstraintLayout.LayoutParams deleteParams = new ConstraintLayout.LayoutParams(
                     (int) getResources().getDimension(R.dimen.delete_button_size),
                     (int) getResources().getDimension(R.dimen.delete_button_size)
             );
 
-            // Use the public fields for constraints directly
             deleteParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
-            deleteParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID; // Corrected: topToTop, not topToTopOf
+            deleteParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
 
             deleteButton.setLayoutParams(deleteParams);
             deleteButton.setOnClickListener(v -> {
                 selectedImageUris.remove(uri);
-                updatePhotoPreviewAndCount();
+                updatePhotoPreviewAndCount(); // Corrected recursive call
             });
             imageContainer.addView(deleteButton);
-            // DELETE BUTTON LOGIC - CORRECTION ENDS HERE
+            // END DELETE BUTTON LOGIC
 
             layoutImagePreviews.addView(imageContainer);
         }
@@ -247,22 +258,40 @@ public class PostWriteActivity extends AppCompatActivity {
     }
 
     private void uploadImagesToFirebaseStorage(String title, String time, int count, String location, String content) {
-        if (selectedImageUris.isEmpty()) {
-            // 이미지가 없으면 바로 Firestore에 저장
-            savePostToFirestore(title, time, count, location, content, new ArrayList<>());
+        // 로그인 정보 확인
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(this, "게시물 작성에는 로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+            setResult(Activity.RESULT_CANCELED);
+            finish();
             return;
         }
 
-        uploadedImageUrls.clear(); // 기존 업로드 URL 리스트 초기화
-        final int[] uploadCount = {0}; // 업로드된 이미지 개수 카운터
+        final String hostUid = currentUser.getUid();
+        final String hostName;
+
+        if (currentUser.getDisplayName() != null && !currentUser.getDisplayName().isEmpty()) {
+            hostName = currentUser.getDisplayName();
+        } else if (currentUser.getEmail() != null && !currentUser.getEmail().isEmpty()) {
+            hostName = currentUser.getEmail();
+        } else {
+            hostName = "Unknown User";
+        }
+
+        if (selectedImageUris.isEmpty()) {
+            // 이미지가 없으면 바로 Firestore에 저장 (hostUid, hostName 추가)
+            savePostToFirestore(title, time, count, location, content, new ArrayList<>(), hostUid, hostName);
+            return;
+        }
+
+        uploadedImageUrls.clear();
+        final int[] uploadCount = {0};
 
         Toast.makeText(this, "이미지 업로드 중...", Toast.LENGTH_LONG).show();
-        btnSubmit.setEnabled(false); // 업로드 중 버튼 비활성화
+        btnSubmit.setEnabled(false);
 
         for (Uri uri : selectedImageUris) {
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-            // 파일명에 고유성을 더하기 위해 UUID를 사용하거나, 더 확실한 방법으로 변경할 수 있습니다.
-            // 여기서는 System.currentTimeMillis()와 timestamp를 결합합니다.
             String fileName = "post_images/" + System.currentTimeMillis() + "_" + timestamp + ".jpg";
             StorageReference imageRef = storageRef.child(fileName);
 
@@ -273,44 +302,42 @@ public class PostWriteActivity extends AppCompatActivity {
                     uploadCount[0]++;
 
                     if (uploadCount[0] == selectedImageUris.size()) {
-                        // 모든 이미지 업로드가 완료되면 게시물 저장
-                        savePostToFirestore(title, time, count, location, content, uploadedImageUrls);
-                        btnSubmit.setEnabled(true); // 업로드 완료 후 버튼 다시 활성화
+                        savePostToFirestore(title, time, count, location, content, uploadedImageUrls, hostUid, hostName);
+                        btnSubmit.setEnabled(true);
                     }
                 }).addOnFailureListener(e -> {
+                    Log.e(TAG, "다운로드 URL 가져오기 실패: " + e.getMessage(), e);
                     Toast.makeText(this, "다운로드 URL 가져오기 실패: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    // 오류 발생해도 카운트 증가, 모든 이미지 업로드 시도 후 게시물 저장 시도
                     uploadCount[0]++;
                     if (uploadCount[0] == selectedImageUris.size()) {
                         Toast.makeText(this, "일부 이미지 업로드 실패. 게시물 저장 시도.", Toast.LENGTH_SHORT).show();
-                        savePostToFirestore(title, time, count, location, content, uploadedImageUrls);
+                        savePostToFirestore(title, time, count, location, content, uploadedImageUrls, hostUid, hostName);
                         btnSubmit.setEnabled(true);
                     }
                 });
             }).addOnFailureListener(e -> {
+                Log.e(TAG, "이미지 업로드 실패: " + e.getMessage(), e);
                 Toast.makeText(this, "이미지 업로드 실패: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                // 오류 발생해도 카운트 증가, 모든 이미지 업로드 시도 후 게시물 저장 시도
                 uploadCount[0]++;
                 if (uploadCount[0] == selectedImageUris.size()) {
                     Toast.makeText(this, "일부 이미지 업로드 실패. 게시물 저장 시도.", Toast.LENGTH_SHORT).show();
-                    savePostToFirestore(title, time, count, location, content, uploadedImageUrls);
+                    savePostToFirestore(title, time, count, location, content, uploadedImageUrls, hostUid, hostName);
                     btnSubmit.setEnabled(true);
                 }
             });
         }
     }
 
-    private void savePostToFirestore(String title, String time, int count, String location, String content, List<String> imageUrls) {
-        Post newPost = new Post(title, time, count, location, content, imageUrls, new Date());
+    private void savePostToFirestore(String title, String time, int count, String location, String content, List<String> imageUrls, String hostUid, String hostName) {
+        Post newPost = new Post(title, time, count, location, content, imageUrls, new Date(), hostUid, hostName);
 
         db.collection("posts")
                 .add(newPost)
                 .addOnSuccessListener(documentReference -> {
-                    String postId = documentReference.getId(); // 🔹 여기가 핵심!
-
+                    String postId = documentReference.getId();
                     Toast.makeText(this, "게시물 작성 완료!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "게시물 작성 성공. Post ID: " + postId);
 
-                    // 🔹 DetailActivity로 postId 전달
                     Intent intent = new Intent(PostWriteActivity.this, DetailActivity.class);
                     intent.putExtra("postId", postId);
                     startActivity(intent);
@@ -320,8 +347,9 @@ public class PostWriteActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "게시물 작성 실패: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "게시물 작성 실패: " + e.getMessage(), e);
+                    setResult(Activity.RESULT_CANCELED);
                     finish();
                 });
     }
-
 }
