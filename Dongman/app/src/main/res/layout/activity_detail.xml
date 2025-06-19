@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- 툴바 -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -19,6 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- 대표 이미지 -->
     <ImageView
         android:id="@+id/img_cover"
         android:layout_width="0dp"
@@ -30,13 +32,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- 스크롤 영역 -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/img_cover"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_buttons"
+        app:layout_constraintBottom_toTopOf="@id/bottom_buttons"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -70,40 +73,22 @@
                 android:layout_marginTop="16dp"
                 android:lineSpacingExtra="4dp"
                 android:text="@string/desc_weekly_detail" />
-
-            <TextView
-                android:id="@+id/tv_detail_location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@android:color/black"
-                android:layout_marginTop="4dp"
-                android:text="위치 정보 표시 예정" />
-
-            <TextView
-                android:id="@+id/tv_people_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                tools:text="감지된 사람 수: 0명\n모집 인원: 10명\n참여율: 0.00%" />
-
         </LinearLayout>
     </ScrollView>
 
+    <!-- 하단 고정 버튼 -->
     <LinearLayout
         android:id="@+id/bottom_buttons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_margin="16dp"
         android:gravity="center_vertical"
+        android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- 즐겨찾기 -->
         <ImageButton
             android:id="@+id/btn_favorite"
             android:layout_width="48dp"
@@ -113,6 +98,7 @@
             android:src="@drawable/ic_heart"
             app:tint="@color/black" />
 
+        <!-- 참가 버튼 -->
         <Button
             android:id="@+id/btn_join"
             android:layout_width="0dp"
@@ -123,11 +109,22 @@
             android:textColor="@android:color/white"
             android:backgroundTint="@color/teal_700" />
 
+        <!-- 지도 버튼 -->
+        <ImageButton
+            android:id="@+id/btn_map"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/googlemap"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="지도 보기"
+            android:padding="4dp" />
+
         <Button
             android:id="@+id/chatWithHostButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:layout_weight="1.5"
             android:text="모임장과 채팅하기"
             android:backgroundTint="@color/colorPrimary"
@@ -135,5 +132,4 @@
             android:padding="12dp" />
 
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
