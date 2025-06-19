@@ -1,78 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatActivity">
+    android:orientation="vertical"
+    android:background="#F8F9FA"
+    android:paddingTop="70dp">
 
+    <!-- 툴바 -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:navigationIcon="?attr/homeAsUpIndicator"
+        android:layout_height="56dp"
+        android:background="#FFFFFF"
+        android:elevation="2dp"
+        app:navigationIcon="@drawable/arrow_back"
         app:title="채팅"
-        app:titleTextColor="@android:color/white" />
+        app:titleTextColor="#1A1A1A" />
 
-    <AutoCompleteTextView
-        android:id="@+id/spinner_notice"
+    <!-- 모임 정보 -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:hint="공지사항 선택"
-        android:visibility="gone" tools:visibility="visible"/>
+        android:background="#FFFFFF"
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📋"
+            android:textSize="16sp"
+            android:layout_marginEnd="8dp" />
 
+        <AutoCompleteTextView
+            android:id="@+id/spinner_notice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:text="모임 정보"
+            android:textColor="#1A1A1A"
+            android:textSize="14sp"
+            android:inputType="none"
+            android:focusable="false" />
+
+    </LinearLayout>
+
+    <!-- 구분선 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0" />
+
+    <!-- 채팅 메시지 영역 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_chat"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/spinner_notice"
-        android:layout_above="@+id/message_input_layout"
-        android:background="#F0F0F0"
-        android:paddingBottom="8dp"
-        android:clipToPadding="false"
-        android:scrollbars="vertical" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:clipToPadding="false" />
 
+    <!-- 하단 입력 영역 -->
     <LinearLayout
-        android:id="@+id/message_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
         android:orientation="horizontal"
-        android:padding="8dp"
-        android:background="@android:color/white"
-        android:elevation="4dp">
+        android:padding="12dp"
+        android:gravity="center_vertical">
 
+        <!-- 메시지 입력창 -->
         <EditText
             android:id="@+id/message_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="메시지를 입력하세요"
+            android:background="@drawable/edit_text_background"
+            android:hint="메시지를 입력하세요..."
+            android:textColorHint="#9E9E9E"
+            android:textColor="#1A1A1A"
+            android:textSize="14sp"
             android:maxLines="4"
-            android:minHeight="48dp"
-            android:inputType="textLongMessage"
-            android:background="@drawable/background_message_input"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"/>
+            android:minHeight="40dp"
+            android:padding="12dp"
+            android:layout_marginEnd="8dp" />
 
+        <!-- 전송 버튼 -->
         <ImageButton
             android:id="@+id/send_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/send_button_background"
             android:src="@drawable/ic_send"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="8dp"
-            android:layout_marginStart="8dp"
-            android:contentDescription="Send message button" />
+            android:scaleType="center"
+            android:contentDescription="메시지 전송" />
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

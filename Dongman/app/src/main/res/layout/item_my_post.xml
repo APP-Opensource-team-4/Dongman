@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <!-- 썸네일 이미지 -->
+        <ImageView
+            android:id="@+id/img_thumbnail"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder_thumbnail" />
+
+        <!-- 내용 영역 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
+
+            <!-- 제목 -->
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="제목"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <!-- 내용 -->
+            <TextView
+                android:id="@+id/tv_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="내용"
+                android:textSize="14sp"
+                android:textColor="#666666" />
+
+            <!-- 메타 정보 -->
+            <TextView
+                android:id="@+id/tv_meta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="장소 • 시간 • 멤버"
+                android:textSize="12sp"
+                android:textColor="#999999" />
+
+            <!-- 작성 시간 -->
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="2025.06.20 14:30"
+                android:textSize="11sp"
+                android:textColor="#AAAAAA" />
+
+        </LinearLayout>
+
+        <!-- 버튼 영역 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_edit"
+                android:layout_width="80dp"
+                android:layout_height="32dp"
+                android:text="수정"
+                android:textSize="10sp"
+                android:backgroundTint="#4CAF50" />
+
+            <Button
+                android:id="@+id/btn_delete"
+                android:layout_width="80dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="4dp"
+                android:text="삭제"
+                android:textSize="10sp"
+                android:backgroundTint="#F44336" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

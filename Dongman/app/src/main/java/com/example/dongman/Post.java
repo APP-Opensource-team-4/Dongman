@@ -1,4 +1,3 @@
-// Post.java
 package com.example.dongman;
 
 import com.google.firebase.firestore.ServerTimestamp;
@@ -21,6 +20,11 @@ public class Post implements Serializable {
     private String hostUid;    // Firebase User ID (UID) of the meeting host
     private String hostName;   // Name of the meeting host (for display)
 
+    // PostEditActivity에서 사용하는 필드들 추가
+    private Date dateTime;     // 모임 날짜/시간
+    private int maxParticipants; // 최대 참가자 수
+    private Date updatedAt;    // 수정 시간
+
     public Post() {
         this.imageUrls = new ArrayList<>();
     }
@@ -35,9 +39,10 @@ public class Post implements Serializable {
         this.timestamp = timestamp;
         this.hostUid = hostUid;
         this.hostName = hostName;
+        this.maxParticipants = count; // count를 maxParticipants로 매핑
     }
 
-    // Getters and Setters
+    // 기존 Getters and Setters
     public String getId() {
         return id;
     }
@@ -116,6 +121,32 @@ public class Post implements Serializable {
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
+    }
+
+    // 새로 추가된 Getters and Setters
+    public Date getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(Date dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public int getMaxParticipants() {
+        return maxParticipants != 0 ? maxParticipants : count; // maxParticipants가 없으면 count 사용
+    }
+
+    public void setMaxParticipants(int maxParticipants) {
+        this.maxParticipants = maxParticipants;
+        this.count = maxParticipants; // 하위 호환성을 위해 count도 동기화
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     // Helper method to get the first image URL

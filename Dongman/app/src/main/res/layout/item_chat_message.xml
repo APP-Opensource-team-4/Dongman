@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 내 메시지 (오른쪽) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_message_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="4dp">
+
+    <!-- 상대방 프로필 이미지 (왼쪽 메시지용) -->
+    <ImageView
+        android:id="@+id/img_profile_other"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/circle_background"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_person"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- 상대방 이름 (왼쪽 메시지용) -->
+        <TextView
+            android:id="@+id/tv_sender_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="8dp"
+            android:text="상대방"
+            android:textColor="#666666"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <!-- 메시지 컨테이너 -->
+        <LinearLayout
+            android:id="@+id/layout_message_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <!-- 시간 (내 메시지용 - 왼쪽) -->
+            <TextView
+                android:id="@+id/tv_time_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginEnd="6dp"
+                android:text="오후 2:30"
+                android:textColor="#999999"
+                android:textSize="10sp"
+                android:visibility="gone" />
+
+            <!-- 메시지 말풍선 -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="#007AFF"
+                app:cardMaxElevation="2dp">
+
+                <TextView
+                    android:id="@+id/tv_message_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp"
+                    android:maxWidth="240dp"
+                    android:text="안녕하세요! 모임에 참여하고 싶습니다."
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- 시간 (상대방 메시지용 - 오른쪽) -->
+            <TextView
+                android:id="@+id/tv_time_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="6dp"
+                android:text="오후 2:30"
+                android:textColor="#999999"
+                android:textSize="10sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- 내 프로필 이미지 (오른쪽 메시지용) -->
+    <ImageView
+        android:id="@+id/img_profile_mine"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/circle_background"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_person"
+        android:visibility="gone" />
+
+</LinearLayout>

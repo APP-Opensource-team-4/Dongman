@@ -22,7 +22,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference; // 추가
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -49,37 +49,97 @@ public class ChatActivity extends AppCompatActivity {
     private EditText messageEditText;
     private ImageButton sendButton;
 
-    // 테스트용 사용자 정보 (실제 앱에서는 로그인 화면에서 가져오거나 Firebase Auth 사용)
-    private String TEST_USER_EMAIL = "testuser@example.com";
-    private String TEST_USER_PASSWORD = "password123";
-    private String CURRENT_USER_NAME = "테스트 사용자";
+    // DetailActivity에서 전달받는 정보
+    private String chatRoomId;
+    private String otherUserId;
+    private String otherUserName;
+    private String postTitle;
+    private String currentUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        Toolbar tb = findViewById(R.id.toolbar);
-        tb.setNavigationOnClickListener(v -> finish());
-
-        AutoCompleteTextView spin = findViewById(R.id.spinner_notice);
-        if (spin != null) {
-            spin.setAdapter(new ArrayAdapter<>(this,
-                    android.R.layout.simple_list_item_1,
-                    new String[]{"5월 넷째주 모임 일정"}));
-        }
-
-        // --- Firebase 초기화 ---
+        // Firebase 초기화
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        chatCollection = db.collection("chats"); // 'chats' 컬렉션 사용
 
-        // --- UI 요소 연결 ---
+        // DetailActivity에서 전달받은 데이터 가져오기
+        getIntentData();
+
+        // 툴바 설정
+        setupToolbar();
+
+        // 스피너 설정 (모임 제목 표시)
+        setupSpinner();
+
+        // 채팅방 컬렉션 설정
+        setupChatCollection();
+
+        // UI 요소 연결
+        initializeUI();
+
+        // 사용자 확인 및 채팅 로드
+        checkUserAndLoadChat();
+    }
+
+    private void getIntentData() {
+        chatRoomId = getIntent().getStringExtra("chatRoomId");
+        otherUserId = getIntent().getStringExtra("otherUserId");
+        otherUserName = getIntent().getStringExtra("otherUserName");
+        postTitle = getIntent().getStringExtra("postTitle");
+
+        Log.d(TAG, "ChatRoom ID: " + chatRoomId);
+        Log.d(TAG, "Other User: " + otherUserName);
+        Log.d(TAG, "Post Title: " + postTitle);
+    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setTitle(otherUserName != null ? otherUserName + "와의 채팅" : "채팅");
+            }
+            toolbar.setNavigationOnClickListener(v -> finish());
+        }
+    }
+
+    private void setupSpinner() {
+        AutoCompleteTextView spinner = findViewById(R.id.spinner_notice);
+        if (spinner != null && postTitle != null) {
+            spinner.setAdapter(new ArrayAdapter<>(this,
+                    android.R.layout.simple_list_item_1,
+                    new String[]{postTitle}));
+        }
+    }
+
+    private void setupChatCollection() {
+        // 1:1 채팅방 컬렉션 설정
+        if (chatRoomId != null && !chatRoomId.isEmpty()) {
+            // DetailActivity에서 온 경우: 특정 1:1 채팅방
+            chatCollection = db.collection("chatRooms").document(chatRoomId).collection("messages");
+            Log.d(TAG, "Using specific chat room: " + chatRoomId);
+        } else {
+            // 메인화면에서 온 경우: 전체 채팅 (임시)
+            Log.d(TAG, "No chatRoomId provided, using general chat");
+            chatCollection = db.collection("chats"); // 전체 채팅방 사용
+
+            // 툴바 제목 변경
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle("전체 채팅");
+            }
+        }
+    }
+
+    private void initializeUI() {
         chatRecyclerView = findViewById(R.id.recycler_chat);
         messageEditText = findViewById(R.id.message_edit_text);
         sendButton = findViewById(R.id.send_button);
 
-        // --- RecyclerView 설정 ---
+        // RecyclerView 설정
         messageList = new ArrayList<>();
         chatAdapter = new ChatAdapter(messageList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -87,62 +147,48 @@ public class ChatActivity extends AppCompatActivity {
         chatRecyclerView.setLayoutManager(layoutManager);
         chatRecyclerView.setAdapter(chatAdapter);
 
-        // --- 메시지 전송 버튼 리스너 ---
+        // 메시지 전송 버튼 리스너
         if (sendButton != null) {
-            sendButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sendMessage();
-                }
-            });
+            sendButton.setOnClickListener(v -> sendMessage());
         }
+    }
 
-        // --- 사용자 인증 (테스트용) ---
-        if (mAuth.getCurrentUser() != null) {
-            CURRENT_USER_NAME = Objects.requireNonNull(mAuth.getCurrentUser().getEmail()).split("@")[0];
+    private void checkUserAndLoadChat() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        Log.d(TAG, "Firebase User check: " + (currentUser != null ? currentUser.getUid() : "NULL"));
+
+        if (currentUser != null) {
+            // Firebase Auth에 로그인되어 있음
+            currentUserName = currentUser.getDisplayName();
+            if (currentUserName == null || currentUserName.isEmpty()) {
+                currentUserName = currentUser.getEmail() != null ?
+                        currentUser.getEmail().split("@")[0] : "사용자";
+            }
+            Log.d(TAG, "User logged in as: " + currentUserName);
             loadChatMessages();
         } else {
-            signInAnonymously(); // 익명 로그인 시도
-            // 또는 signInUser(TEST_USER_EMAIL, TEST_USER_PASSWORD);
+            // Firebase Auth에 로그인되어 있지 않음 - 익명 로그인 시도
+            Log.d(TAG, "No Firebase user, attempting anonymous login");
+            signInAnonymously();
         }
     }
 
     private void signInAnonymously() {
         mAuth.signInAnonymously()
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "signInAnonymously:success");
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Anonymous sign in successful");
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            currentUserName = "익명사용자_" + user.getUid().substring(0, 6);
                             loadChatMessages();
-                        } else {
-                            Log.w(TAG, "signInAnonymously:failure", task.getException());
-                            Toast.makeText(ChatActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
                         }
-                    }
-                });
-    }
-
-    private void signInUser(String email, String password) {
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user != null && user.getEmail() != null) {
-                                CURRENT_USER_NAME = user.getEmail().split("@")[0];
-                            } else {
-                                CURRENT_USER_NAME = "알 수 없는 사용자";
-                            }
-                            loadChatMessages();
-                        } else {
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(ChatActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
+                    } else {
+                        Log.e(TAG, "Anonymous sign in failed", task.getException());
+                        // 익명 로그인도 실패하면 기본 사용자로 진행
+                        currentUserName = "게스트";
+                        loadChatMessages();
                     }
                 });
     }
@@ -154,30 +200,38 @@ public class ChatActivity extends AppCompatActivity {
             return;
         }
 
+        // 현재 사용자 정보 확인
+        String senderId = "guest";
+        String senderName = currentUserName != null ? currentUserName : "게스트";
+
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null) {
-            Toast.makeText(this, "로그인되어 있지 않습니다. 다시 로그인해주세요.", Toast.LENGTH_SHORT).show();
-            return;
+        if (user != null) {
+            senderId = user.getUid();
         }
 
-        Message message = new Message(user.getUid(), CURRENT_USER_NAME, messageText);
+        // 메시지 객체 생성
+        Message message = new Message(senderId, senderName, messageText);
 
+        // Firestore에 메시지 저장
         chatCollection.add(message)
-                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() { // 변경된 부분
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) { // 변경된 부분
-                        if (task.isSuccessful()) {
-                            messageEditText.setText("");
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Message sent successfully");
+                        messageEditText.setText("");
+                        // 메시지 전송 후 자동으로 스크롤
+                        if (messageList.size() > 0) {
                             chatRecyclerView.scrollToPosition(messageList.size() - 1);
-                        } else {
-                            Log.e(TAG, "메시지 전송 실패", task.getException());
-                            Toast.makeText(ChatActivity.this, "메시지 전송 실패!", Toast.LENGTH_SHORT).show();
                         }
+                    } else {
+                        Log.e(TAG, "메시지 전송 실패", task.getException());
+                        Toast.makeText(ChatActivity.this, "메시지 전송 실패!", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void loadChatMessages() {
+        Log.d(TAG, "Loading chat messages...");
+
         chatCollection
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -190,19 +244,33 @@ public class ChatActivity extends AppCompatActivity {
                             return;
                         }
 
-                        messageList.clear();
-                        for (QueryDocumentSnapshot doc : Objects.requireNonNull(snapshots)) {
-                            Message message = doc.toObject(Message.class);
-                            if (mAuth.getCurrentUser() != null && Objects.equals(message.getSenderId(), mAuth.getCurrentUser().getUid())) {
-                                message.setType(Message.Type.RIGHT);
-                            } else {
-                                message.setType(Message.Type.LEFT);
+                        if (snapshots != null) {
+                            messageList.clear();
+                            for (QueryDocumentSnapshot doc : snapshots) {
+                                Message message = doc.toObject(Message.class);
+
+                                // 현재 사용자의 메시지인지 확인하여 타입 설정
+                                String currentUserId = "guest";
+                                if (mAuth.getCurrentUser() != null) {
+                                    currentUserId = mAuth.getCurrentUser().getUid();
+                                }
+
+                                if (Objects.equals(message.getSenderId(), currentUserId)) {
+                                    message.setType(Message.Type.RIGHT); // 내 메시지는 오른쪽
+                                } else {
+                                    message.setType(Message.Type.LEFT);  // 상대방 메시지는 왼쪽
+                                }
+                                messageList.add(message);
                             }
-                            messageList.add(message);
-                        }
-                        chatAdapter.notifyDataSetChanged();
-                        if (messageList.size() > 0) {
-                            chatRecyclerView.scrollToPosition(messageList.size() - 1);
+
+                            chatAdapter.notifyDataSetChanged();
+
+                            // 새로운 메시지가 있으면 스크롤
+                            if (messageList.size() > 0) {
+                                chatRecyclerView.scrollToPosition(messageList.size() - 1);
+                            }
+
+                            Log.d(TAG, "Loaded " + messageList.size() + " messages");
                         }
                     }
                 });
