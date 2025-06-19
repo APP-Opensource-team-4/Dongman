@@ -27,7 +27,7 @@ public class SignupActivity extends AppCompatActivity {
         pw2Et  = findViewById(R.id.editPwConfirm);
         nameEt = findViewById(R.id.editName);
         phoneEt= findViewById(R.id.editPhone);
-        codeEt = findViewById(R.id.editCode);
+        // codeEt = findViewById(R.id.editCode);
 
         // ✨ Activity 시작 시 idEt (이메일 입력창)에 포커스를 주고 키보드 띄우기
         if (idEt != null) {
@@ -47,17 +47,16 @@ public class SignupActivity extends AppCompatActivity {
             String pw2=pw2Et.getText().toString().trim();
             String name=nameEt.getText().toString().trim();
             String phone=phoneEt.getText().toString().trim();
-            String code=codeEt.getText().toString().trim();
 
             if(id.isEmpty()||pw.isEmpty()||pw2.isEmpty()||name.isEmpty()
-                    ||phone.isEmpty()||code.isEmpty()){
+                    ||phone.isEmpty()){
                 toast("모든 항목을 입력해주세요."); return;
             }
             if(!pw.equals(pw2)){ toast("비밀번호가 일치하지 않습니다."); return; }
 
             Map<String,Object> u=new HashMap<>();
             u.put("email",id); u.put("password",pw);
-            u.put("name",name); u.put("phone",phone); u.put("code",code);
+            u.put("name",name); u.put("phone",phone);
 
             FirebaseFirestore.getInstance().collection("users")
                     .add(u)

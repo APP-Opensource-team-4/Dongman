@@ -148,15 +148,15 @@
                     android:textColor="#ffffff"/>
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/editCode"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:hint="인증번호"
-                android:inputType="number"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:layout_marginTop="16dp" />
+<!--            <EditText-->
+<!--                android:id="@+id/editCode"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:hint="인증번호"-->
+<!--                android:inputType="number"-->
+<!--                android:focusable="true"-->
+<!--                android:focusableInTouchMode="true"-->
+<!--                android:layout_marginTop="16dp" />-->
 
             <Button
                 android:id="@+id/btnSignUp"
