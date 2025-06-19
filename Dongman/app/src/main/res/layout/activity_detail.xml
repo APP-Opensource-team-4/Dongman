@@ -79,6 +79,17 @@
                 android:textColor="@android:color/black"
                 android:layout_marginTop="4dp"
                 android:text="위치 정보 표시 예정" />
+
+            <TextView
+                android:id="@+id/tv_people_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                tools:text="감지된 사람 수: 0명\n모집 인원: 10명\n참여율: 0.00%" />
+
         </LinearLayout>
     </ScrollView>
 

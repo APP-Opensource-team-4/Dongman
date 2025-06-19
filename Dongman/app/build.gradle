@@ -27,6 +27,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_17 // Java 17
         targetCompatibility JavaVersion.VERSION_17 // Java 17
     }
+    buildFeatures {
+        viewBinding true // View Binding을 사용하면 UI 요소 접근이 편리합니다.
+    }
+    aaptOptions {
+        noCompress 'tflite' // ML Kit 모델이 .tflite 파일을 사용하므로 압축하지 않도록 설정
+    }
 }
 
 dependencies {
@@ -64,4 +70,10 @@ dependencies {
     // annotationProcessor "androidx.room:room-compiler:2.6.1"
 
     implementation 'com.google.code.gson:gson:2.10.1' // 또는 최신 버전
+
+    implementation 'com.google.mlkit:object-detection:17.0.1'
+
+    //implementation 'com.google.mlkit:face-detection:17.0.1'
+
+    implementation 'androidx.annotation:annotation:1.6.0'
 }

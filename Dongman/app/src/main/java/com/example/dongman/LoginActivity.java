@@ -3,14 +3,15 @@ package com.example.dongman;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler; // Handler import 추가
-import android.os.Looper; // Looper import 추가
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
@@ -27,22 +28,18 @@ public class LoginActivity extends AppCompatActivity {
         edtEmail = findViewById(R.id.edt_email);
         edtPw    = findViewById(R.id.edt_password);
 
-        // ✨ Activity 시작 시 edtEmail에 포커스를 주고 키보드 띄우기
+        // 포커스 및 키보드 자동 띄우기
         if (edtEmail != null) {
-            // ✨ (선택 사항) 혹시 모를 다른 뷰의 포커스를 초기화
             edtEmail.clearFocus();
             edtPw.clearFocus();
 
-            // ✨ Handler를 사용하여 포커스 요청과 키보드 표시를 약간 딜레이 시킵니다.
-            // UI가 완전히 준비된 후 키보드를 띄우는 데 도움이 될 수 있습니다.
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                edtEmail.requestFocus(); // 이메일 입력창에 포커스를 요청
-
+                edtEmail.requestFocus();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (imm != null) {
                     imm.showSoftInput(edtEmail, InputMethodManager.SHOW_IMPLICIT);
                 }
-            }, 100); // 100밀리초 딜레이 (조정 가능)
+            }, 100);
         }
 
         findViewById(R.id.btn_login).setOnClickListener(v -> {
@@ -58,19 +55,26 @@ public class LoginActivity extends AppCompatActivity {
                         if (q.isEmpty()) {
                             toast("로그인 실패: 정보가 일치하지 않습니다.");
                         } else {
-                            // LoginHelper.setLoggedIn(this,true); // 이 줄을 삭제했습니다.
+                            // ✅ 로그인 상태 저장
+                            LoginHelper.setLoggedIn(getApplicationContext(), true);
                             toast("로그인 성공!");
-                            startActivity(new Intent(this, MainActivity.class)
-                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+                            // ✅ MainActivity로 이동하며 스택 초기화
+                            Intent intent = new Intent(this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
                             finish();
                         }
                     })
-                    .addOnFailureListener(e -> toast("로그인 오류: "+e.getMessage()));
+                    .addOnFailureListener(e -> toast("로그인 오류: " + e.getMessage()));
         });
 
         findViewById(R.id.btn_signup)
                 .setOnClickListener(v -> startActivity(
                         new Intent(this, SignupActivity.class)));
     }
-    private void toast(String msg){ Toast.makeText(this,msg,Toast.LENGTH_SHORT).show(); }
+
+    private void toast(String msg){
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
 }

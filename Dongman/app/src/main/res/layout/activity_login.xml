@@ -6,7 +6,6 @@
     android:paddingTop="50dp"
     android:background="#ffffff">
 
-    <!-- ── 뒤로가기 화살표 툴바 ── -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="wrap_content"
@@ -17,7 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- 20% 높이 가이드라인 -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guide_20"
         android:layout_width="0dp"
@@ -55,7 +53,8 @@
         android:inputType="textEmailAddress"
         android:background="@android:drawable/edit_text"
         android:paddingHorizontal="16dp"
-        android:importantForAutofill="no"  app:layout_constraintTop_toBottomOf="@id/textLoginGuide"
+        android:importantForAutofill="no"
+        app:layout_constraintTop_toBottomOf="@id/textLoginGuide"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginLeft="12dp"
@@ -92,7 +91,7 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/layout_signup_link" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/btn_login"
@@ -119,19 +118,18 @@
         android:layout_marginTop="24dp"
         android:background="@drawable/kakao_login"
         android:contentDescription="kakao_login"
-        app:layout_constraintTop_toBottomOf="@id/btn_signup"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <ImageButton
-        android:id="@+id/btnGoogle"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/google_login"
-        android:contentDescription="google_login"
-        app:layout_constraintTop_toBottomOf="@id/btnKakao"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintTop_toBottomOf="@id/layout_signup_link" app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"/> <ImageButton
+    android:id="@+id/btnGoogle"
+    android:layout_width="0dp"
+    android:layout_height="48dp"
+    android:layout_marginTop="16dp"
+    android:background="@drawable/google_login"
+    android:contentDescription="google_login"
+    app:layout_constraintTop_toBottomOf="@id/btnKakao"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginLeft="12dp"
+    android:layout_marginRight="12dp"/> </androidx.constraintlayout.widget.ConstraintLayout>
