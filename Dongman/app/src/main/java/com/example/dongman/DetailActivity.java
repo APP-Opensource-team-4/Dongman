@@ -6,6 +6,9 @@ import android.widget.TextView;
 import android.widget.Toast; // Toast를 사용하기 위해 추가
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide; // Make sure Glide is in your build.gradle
+import android.content.SharedPreferences;
+import com.google.gson.Gson;
+
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -29,6 +32,8 @@ public class DetailActivity extends AppCompatActivity {
         Post post = (Post) getIntent().getSerializableExtra("post");
 
         if (post != null) {
+            saveRecentPost(post);  // 🔥 이거 꼭 호출해야 SharedPreferences에 저장됩니다!
+
             // TextView에 데이터 설정
             tvTitle.setText(post.getTitle());
             String metaText = post.getTime() + " | 멤버 " + post.getCount() + "명";
@@ -68,4 +73,16 @@ public class DetailActivity extends AppCompatActivity {
         //     toolbar.setNavigationOnClickListener(v -> finish()); // 뒤로가기 버튼 클릭 시 Activity 종료
         // }
     }
+    private void saveRecentPost(Post post) {
+        SharedPreferences prefs = getSharedPreferences("recent_posts", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(post);
+
+        editor.putString(post.getId(), json); // post ID를 키로 사용
+        editor.apply();
+    }
+
 }
+

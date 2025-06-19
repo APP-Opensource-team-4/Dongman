@@ -159,35 +159,27 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Existing Firestore listener removed before new one.");
         }
 
-        // 필터 및 탭 선택에 따라 쿼리 변경 로직 추가
+        // 🔽 필터 및 탭 선택에 따라 쿼리 변경
         Query baseQuery = db.collection("posts");
 
-        // 현재 선택된 탭 (menuNew, menuRecommend)에 따른 정렬
-        // Post.java에 'timestamp' 필드가 Date 타입으로 있어야 합니다.
+        // 탭 선택 (신규 모임 / 추천 모임)
         if (currentTab == menuNew) {
             baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING); // 최신순
         } else if (currentTab == menuRecommend) {
-            // "인기순" 또는 "추천순" 정렬 로직을 추가하려면 Post 클래스에 해당 필드(예: 'views', 'likes')가 필요합니다.
-            // 여기서는 임시로 timestamp 내림차순을 사용합니다.
+            // 인기순 정렬이 준비되지 않았을 경우, 기본값은 최신순
             baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
         }
 
-        // 현재 선택된 필터 (btnLatest, btnPopular, btnViews, btnNearby)에 따른 필터링 (where)
-        // 이 부분은 Post 클래스의 필드와 일치하게 수정하거나, Firestore 문서에 추가 필드를 정의해야 합니다.
+        // 필터 (최신순, 인기순, 조회수순 등)
         if (currentFilter == btnLatest) {
-            // 이미 timestamp 내림차순으로 정렬되므로 추가 필터링은 필요 없을 수 있습니다.
+            // timestamp 기준 정렬이 이미 적용되어 있음
         } else if (currentFilter == btnPopular) {
-            // 예시: Post 클래스에 'likes' 또는 'participants' 필드가 있다면
             // baseQuery = baseQuery.orderBy("likes", Query.Direction.DESCENDING).limit(10);
         } else if (currentFilter == btnViews) {
-            // 예시: Post 클래스에 'views' 필드가 있다면
             // baseQuery = baseQuery.orderBy("views", Query.Direction.DESCENDING).limit(10);
         } else if (currentFilter == btnNearby) {
-            // "주변" 필터링은 GeoFirestore와 같은 복잡한 구현이 필요하거나,
-            // Post에 지역/도시 필드가 있다면 해당 필드로 whereEqualTo/whereArrayContains를 사용할 수 있습니다.
-            // 예시: baseQuery = baseQuery.whereEqualTo("location", "청주시");
+            // baseQuery = baseQuery.whereEqualTo("location", "청주시");
         }
-
 
         firestoreListener = baseQuery.addSnapshotListener((snapshots, e) -> {
             if (e != null) {
@@ -197,27 +189,18 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (snapshots != null) {
-                // 기존 리스트를 비우고 변경사항을 반영하는 방식 (간단하나 효율은 떨어짐)
                 meetingPosts.clear();
                 for (DocumentSnapshot document : snapshots.getDocuments()) {
-                    Post post = document.toObject(Post.class); // Firestore 문서 -> Post 객체로 변환
+                    Post post = document.toObject(Post.class);
                     if (post != null) {
-                        post.setId(document.getId()); // 문서 ID도 Post 객체에 저장
+                        post.setId(document.getId());
                         meetingPosts.add(post);
                     } else {
                         Log.w(TAG, "Failed to convert document " + document.getId() + " to Post object.");
                     }
                 }
-                // Firestore 쿼리에 orderBy가 있다면, 아래 수동 정렬은 필요 없습니다.
-                // Collections.sort(meetingPosts, (p1, p2) -> {
-                //     if (p1.getTimestamp() == null && p2.getTimestamp() == null) return 0;
-                //     if (p1.getTimestamp() == null) return 1;
-                //     if (p2.getTimestamp() == null) return -1;
-                //     return p2.getTimestamp().compareTo(p1.getTimestamp());
-                // });
 
-
-                adapter.notifyDataSetChanged(); // 어댑터에 데이터 변경을 알립니다.
+                adapter.notifyDataSetChanged();
                 Log.d(TAG, "Posts loaded/updated in UI: " + meetingPosts.size() + " items");
 
                 if (!meetingPosts.isEmpty()) {
@@ -226,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     /* ───────── RecyclerView ───────── */
     private void setupRecycler() {
