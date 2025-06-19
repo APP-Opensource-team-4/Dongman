@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:paddingTop="50dp">
+    android:paddingTop="70dp">
 
     <!-- ── 뒤로가기 화살표 툴바 ── -->
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_back"
+        android:id="@+id/toolbar"
         android:layout_width="86dp"
         android:layout_height="98dp"
         android:background="@android:color/transparent"
-        android:padding="24dp"
         app:navigationIcon="@drawable/arrow_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 제목 텍스트 (툴바 오른쪽에 배치) -->
+    <!-- 제목 텍스트 -->
 
-    <!-- ── 게시글 목록 RecyclerView ── -->
+    <!-- 게시글 목록 -->
     <TextView
         android:id="@+id/tv_board_title"
         android:layout_width="wrap_content"
@@ -28,12 +28,12 @@
         android:textColor="#000000"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/toolbar_back"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.308"
-        app:layout_constraintStart_toEndOf="@id/toolbar_back"
-        app:layout_constraintTop_toTopOf="@id/toolbar_back"
-        app:layout_constraintVertical_bias="0.55" />
+        app:layout_constraintStart_toEndOf="@id/toolbar"
+        app:layout_constraintTop_toTopOf="@id/toolbar"
+        app:layout_constraintVertical_bias="0.264" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_board_posts"
@@ -43,7 +43,26 @@
         android:paddingEnd="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_back"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- ✨ 새 글쓰기 버튼 -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btn_write_board"
+        android:layout_width="110dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="50dp"
+        android:text="글쓰기"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        app:backgroundTint="@color/primaryBlue"
+        app:elevation="6dp"
+        app:iconPadding="4dp"
+        app:iconTint="#FFFFFF"
+        app:shapeAppearanceOverlay="@style/RoundedPill"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+    <!-- 필요하면 app:icon="@drawable/ic_add" 추가 -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

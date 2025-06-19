@@ -14,226 +14,213 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
 
 public class ProfileActivity extends AppCompatActivity {
 
     private static final String TAG = "ProfileActivity";
 
-    // UI 요소
+    /* ── UI ─────────────────────────────────────────────── */
     private TextView tvName, tvLocation;
-    private View rowMine, rowRealMine, rowRecent, rowLike, rowAlarm, rowLogout, rowLogin;
-
-    // Bottom Navigation
+    private View  rowMine, rowRealMine, rowRecent, rowLike, rowAlarm, rowLogout, rowLogin;
     private LinearLayout navHome, navFriend, navChat, navProfile;
 
-    // Firebase
+    // 필드 선언부
+    private View btnEditProfile;
+
+    /* ── Firebase ───────────────────────────────────────── */
     private FirebaseAuth mAuth;
 
+    /* ── life-cycle ─────────────────────────────────────── */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Firebase 초기화
         mAuth = FirebaseAuth.getInstance();
-
-        // UI 초기화
-        initializeUI();
-
-        // 메뉴 텍스트 설정
+        initUI();
         setupMenuTexts();
-
-        // 사용자 정보 설정
         setupUserInfo();
-
-        // 메뉴 클릭 리스너 설정
         setupMenuListeners();
-
-        // 하단 네비게이션 설정
         setupBottomNavigation();
     }
 
-    private void initializeUI() {
-        // 툴바 설정
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> finish());
+    @Override protected void onResume() {
+        super.onResume();
+        setupUserInfo();                       // 갱신
+    }
 
-        // 사용자 정보
-        tvName = findViewById(R.id.tv_name);
-        tvLocation = findViewById(R.id.tv_location);
+    /* ── UI 초기화 ───────────────────────────────────────── */
+    private void initUI() {
+        Toolbar tb = findViewById(R.id.toolbar);
+        tb.setNavigationOnClickListener(v -> finish());
 
-        // 메뉴 아이템들
-        rowMine = findViewById(R.id.row_mine);
+        tvName      = findViewById(R.id.tv_name);
+        tvLocation  = findViewById(R.id.tv_location);
+
+        rowMine     = findViewById(R.id.row_mine);
         rowRealMine = findViewById(R.id.row_real_mine);
-        rowRecent = findViewById(R.id.row_recent);
-        rowLike = findViewById(R.id.row_like);
-        rowAlarm = findViewById(R.id.row_alarm);
-        rowLogout = findViewById(R.id.row_logout);
-        rowLogin = findViewById(R.id.row_login);
+        rowRecent   = findViewById(R.id.row_recent);
+        rowLike     = findViewById(R.id.row_like);
+        rowAlarm    = findViewById(R.id.row_alarm);
+        rowLogout   = findViewById(R.id.row_logout);
+        rowLogin    = findViewById(R.id.row_login);
 
-        // 하단 네비게이션
-        navHome = findViewById(R.id.nav_home);
+        navHome   = findViewById(R.id.nav_home);
         navFriend = findViewById(R.id.nav_friend);
-        navChat = findViewById(R.id.nav_chat);
-        navProfile = findViewById(R.id.nav_profile);
+        navChat   = findViewById(R.id.nav_chat);
+        navProfile= findViewById(R.id.nav_profile);
     }
 
+    /* ── 메뉴 라벨 ───────────────────────────────────────── */
     private void setupMenuTexts() {
-        // 각 메뉴 항목의 텍스트 설정
-        setMenuText(rowMine, "참여 중인 모임");
-        setMenuText(rowRealMine, "내 모임");
-        setMenuText(rowRecent, "최근 본 모임");
-        setMenuText(rowLike, "찜한 모임");
-        setMenuText(rowAlarm, "알림 설정");
-        setMenuText(rowLogout, "로그아웃");
-        setMenuText(rowLogin, "로그인");
+        setRowTitle(rowMine,     "참여 중인 모임");
+        setRowTitle(rowRealMine, "내 모임");
+        setRowTitle(rowRecent,   "최근 본 모임");
+        setRowTitle(rowLike,     "찜한 모임");
+        setRowTitle(rowAlarm,    "알림 설정");
+        setRowTitle(rowLogout,   "로그아웃");
+        setRowTitle(rowLogin,    "로그아웃");
+    }
+    private void setRowTitle(View row, String txt) {
+        if (row == null) return;
+        TextView tv = row.findViewById(R.id.tv_row_title);
+        if (tv != null) tv.setText(txt);
     }
 
-    private void setMenuText(View menuView, String text) {
-        if (menuView != null) {
-            TextView textView = menuView.findViewById(R.id.tv_row_title);
-            if (textView != null) {
-                textView.setText(text);
-            }
-        }
-    }
-
+    /* ── 사용자 정보 표시 ───────────────────────────────── */
     private void setupUserInfo() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseAuth     auth = FirebaseAuth.getInstance();
+        FirebaseFirestore db  = FirebaseFirestore.getInstance();
+        FirebaseUser      cur = auth.getCurrentUser();
 
-        if (currentUser != null) {
-            // 로그인된 사용자 정보 표시
-            String displayName = getUserDisplayName(currentUser);
-            tvName.setText(displayName);
-
-            // 로그인 버튼 숨기기
-            rowLogin.setVisibility(View.GONE);
-            rowLogout.setVisibility(View.VISIBLE);
-        } else {
-            // 로그인되지 않은 상태
-            tvName.setText("게스트");
-            rowLogin.setVisibility(View.VISIBLE);
+        if (cur == null) {
+            tvName.setText("Guest");
+            rowLogin .setVisibility(View.VISIBLE);
             rowLogout.setVisibility(View.GONE);
+
+            auth.signInAnonymously()
+                    .addOnSuccessListener(r -> {
+                        String uid = r.getUser().getUid();
+                        db.collection("users").document(uid)
+                                .get()
+                                .addOnSuccessListener(d -> {
+                                    if (!d.exists()) {
+                                        HashMap<String,Object> map = new HashMap<>();
+                                        map.put("name","익명"); map.put("email","");
+                                        db.collection("users").document(uid).set(map);
+                                    }
+                                    setupUserInfo();      // 또는 rowLogin GONE / rowLogout VISIBLE 직접 설정
+                                });
+                    });
+            return;
         }
+
+        /* B. Firebase 프로필 우선 */
+        String disp = getDisplayName(cur);
+        tvName.setText(disp);
+        rowLogin .setVisibility(View.GONE);
+        rowLogout.setVisibility(View.VISIBLE);
+
+        /* C. Firestore 이메일-닉네임 조회 */
+        String email = cur.getEmail();
+        if (email == null || email.isEmpty()) return;
+
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(qs -> {
+                    if (!qs.isEmpty()) {
+                        String nick = qs.getDocuments().get(0).getString("name");
+                        if (nick != null && !nick.isEmpty()) tvName.setText(nick);
+                    } else {
+                        Log.w(TAG,"users 문서 없음(email 매칭)");
+                    }
+                })
+                .addOnFailureListener(e -> Log.w(TAG,"닉네임 로드 실패",e));
+    }
+    private String getDisplayName(FirebaseUser u) {
+        if (u.getDisplayName()!=null && !u.getDisplayName().isEmpty()) return u.getDisplayName();
+        if (u.getEmail()!=null && !u.getEmail().isEmpty())             return u.getEmail().split("@")[0];
+        return "사용자";
     }
 
-    private String getUserDisplayName(FirebaseUser user) {
-        if (user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
-            return user.getDisplayName();
-        } else if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-            return user.getEmail().split("@")[0];
-        } else {
-            return "사용자";
-        }
-    }
-
+    /* ── 상단 메뉴 클릭 ───────────────────────────────── */
     private void setupMenuListeners() {
-        // 참여 중인 모임
-        rowMine.setOnClickListener(v -> {
-            Toast.makeText(this, "참여 중인 모임 (구현 예정)", Toast.LENGTH_SHORT).show();
-        });
 
-        // 내 모임 (작성한 모임)
+        rowMine.setOnClickListener(v ->
+                Toast.makeText(this,"참여 중인 모임(구현 예정)",Toast.LENGTH_SHORT).show());
+
         rowRealMine.setOnClickListener(v -> {
-            // LoginHelper로 먼저 체크 (PostWriteActivity와 동일)
             if (!LoginHelper.isLoggedIn(this)) {
-                showLoginRequiredDialog("내 모임을 확인하려면 로그인이 필요합니다.");
+                showLoginDialog("내 모임을 확인하려면 로그인이 필요합니다.");
                 return;
             }
-
-            Intent intent = new Intent(this, MyPostsActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, MyPostsActivity.class));
         });
 
-        // 최근 본 모임
-        rowRecent.setOnClickListener(v -> {
-            Toast.makeText(this, "최근 본 모임 (구현 예정)", Toast.LENGTH_SHORT).show();
-        });
+        rowRecent.setOnClickListener(
+                v -> startActivity(new Intent(this, RecentActivity.class)));
 
-        // 찜한 모임
-        rowLike.setOnClickListener(v -> {
-            Toast.makeText(this, "찜한 모임 (구현 예정)", Toast.LENGTH_SHORT).show();
-        });
+        rowLike.setOnClickListener(
+                v -> Toast.makeText(this,"찜한 모임(구현 예정)",Toast.LENGTH_SHORT).show());
 
-        // 알림 설정
-        rowAlarm.setOnClickListener(v -> {
-            Toast.makeText(this, "알림 설정 (구현 예정)", Toast.LENGTH_SHORT).show();
-        });
+        rowAlarm.setOnClickListener(
+                v -> startActivity(new Intent(this, NotificationSettingsActivity.class)));
 
-        // 로그아웃
-        rowLogout.setOnClickListener(v -> {
-            showLogoutDialog();
-        });
+        rowLogout.setOnClickListener(v -> showLogoutDialog());
 
-        // 로그인 (임시)
-        rowLogin.setOnClickListener(v -> {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        });
+        rowLogin.setOnClickListener(
+                v -> startActivity(new Intent(this, MainActivity.class)));
+
+        // initUI()
+                btnEditProfile = findViewById(R.id.btn_edit_profile);
+
+        // setupMenuListeners()
+                btnEditProfile.setOnClickListener(v ->
+                        startActivity(new Intent(this, EditProfileActivity.class)));
+
     }
 
+    /* ── 하단 네비 ───────────────────────────────────── */
     private void setupBottomNavigation() {
-        navHome.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-        });
 
-        navFriend.setOnClickListener(v -> {
-            Intent intent = new Intent(this, BoardActivity.class);
-            startActivity(intent);
-        });
+        navHome.setOnClickListener(
+                v -> { Intent i=new Intent(this,MainActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); startActivity(i); });
 
-        navChat.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ChatActivity.class);
-            startActivity(intent);
-        });
+        navFriend.setOnClickListener(
+                v -> startActivity(new Intent(this, BoardActivity.class)));
 
-        navProfile.setOnClickListener(v -> {
-            // 현재 화면이므로 아무것도 하지 않음
-            Toast.makeText(this, "현재 프로필 화면입니다", Toast.LENGTH_SHORT).show();
-        });
+        navChat.setOnClickListener(
+                v -> startActivity(new Intent(this, ChatActivity.class)));
+
+        navProfile.setOnClickListener(
+                v -> Toast.makeText(this,"현재 프로필 화면입니다",Toast.LENGTH_SHORT).show());
     }
 
-    private void showLoginRequiredDialog(String message) {
+    /* ── 다이얼로그 모음 ───────────────────────────────── */
+    private void showLoginDialog(String msg){
         new AlertDialog.Builder(this)
-                .setTitle("로그인 필요")
-                .setMessage(message)
-                .setPositiveButton("로그인하기", (dialog, which) -> {
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    startActivity(intent);
-                })
-                .setNegativeButton("취소", null)
-                .show();
+                .setTitle("로그인 필요").setMessage(msg)
+                .setPositiveButton("로그인하기",
+                        (d,w)->startActivity(new Intent(this,LoginActivity.class)))
+                .setNegativeButton("취소",null).show();
     }
-
-    private void showLogoutDialog() {
+    private void showLogoutDialog(){
         new AlertDialog.Builder(this)
-                .setTitle("로그아웃")
-                .setMessage("정말 로그아웃하시겠습니까?")
-                .setPositiveButton("로그아웃", (dialog, which) -> {
-                    // Firebase 로그아웃
+                .setTitle("로그아웃").setMessage("정말 로그아웃하시겠습니까?")
+                .setPositiveButton("로그아웃",(d,w)->{
                     mAuth.signOut();
-
-                    // SharedPreferences 로그아웃 상태 업데이트
-                    LoginHelper.setLoggedIn(this, false);
-
-                    Toast.makeText(this, "로그아웃되었습니다", Toast.LENGTH_SHORT).show();
-
-                    // 메인 화면으로 이동
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
+                    LoginHelper.setLoggedIn(this,false);
+                    Toast.makeText(this,"로그아웃되었습니다",Toast.LENGTH_SHORT).show();
+                    Intent i=new Intent(this,MainActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i); finish();
                 })
-                .setNegativeButton("취소", null)
-                .show();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // 화면이 다시 보일 때마다 사용자 정보 업데이트
-        setupUserInfo();
+                .setNegativeButton("취소",null).show();
     }
 }

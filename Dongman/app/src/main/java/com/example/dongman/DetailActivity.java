@@ -1,6 +1,8 @@
 package com.example.dongman;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -12,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -26,7 +30,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -48,6 +54,40 @@ public class DetailActivity extends AppCompatActivity {
     private View btnJoin;             // Button 대신 View 사용
     private View btnFavorite;         // AppCompatImageButton 대신 View 사용
     private View btnMap;              // Button 대신 View 사용
+
+    private static final String PREF_KEY_RECENT = "recent_posts";
+
+
+    private void safeLaunch(Class<?> c) {
+        if (LoginHelper.isLoggedIn(this)) {
+            if (c.equals(PostWriteActivity.class)) {
+                writeLauncher.launch(new Intent(this, c));
+            } else {
+                startActivity(new Intent(this, c));
+            }
+        } else {
+            showLoginDialog();
+        }
+    }
+
+    private final ActivityResultLauncher<Intent> writeLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), r -> {
+                if (r.getResultCode() == Activity.RESULT_OK) {
+                    Toast.makeText(this, "게시물이 성공적으로 작성되었습니다!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "PostWriteActivity completed successfully.");
+                }
+            });
+
+    private void showLoginDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("로그인이 필요합니다")
+                .setMessage("해당 기능은 로그인 후 이용할 수 있습니다.")
+                .setPositiveButton("로그인하기", (d, w) -> {
+                    startActivity(new Intent(this, LoginActivity.class));
+                })
+                .setNegativeButton("닫기", null)
+                .show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,55 +142,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         // 채팅 버튼
-        if (chatWithHostButton != null) {
-            chatWithHostButton.setOnClickListener(v -> {
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-                if (currentUser == null) {
-                    new AlertDialog.Builder(this)
-                            .setTitle("로그인이 필요합니다")
-                            .setMessage("채팅 기능을 이용하려면 로그인해야 합니다.")
-                            .setPositiveButton("로그인하기", (d, w) -> {
-                                startActivity(new Intent(this, LoginActivity.class));
-                            })
-                            .setNegativeButton("닫기", null)
-                            .show();
-                    return;
-                }
-
-                if (currentPost == null) {
-                    Toast.makeText(DetailActivity.this, "모임 정보가 아직 로드되지 않았습니다.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (currentPost.getHostUid() != null && !currentPost.getHostUid().isEmpty()) {
-                    if (!currentPost.getHostUid().equals(currentUser.getUid())) {
-                        Intent chatIntent = new Intent(DetailActivity.this, ChatActivity.class);
-
-                        String chatRoomId;
-                        String userId1 = currentUser.getUid();
-                        String userId2 = currentPost.getHostUid();
-
-                        if (userId1.compareTo(userId2) < 0) {
-                            chatRoomId = userId1 + "_" + userId2;
-                        } else {
-                            chatRoomId = userId2 + "_" + userId1;
-                        }
-
-                        chatIntent.putExtra("chatRoomId", chatRoomId);
-                        chatIntent.putExtra("otherUserId", currentPost.getHostUid());
-                        chatIntent.putExtra("otherUserName", currentPost.getHostName());
-                        chatIntent.putExtra("postTitle", currentPost.getTitle());
-
-                        startActivity(chatIntent);
-                    } else {
-                        Toast.makeText(DetailActivity.this, "자신과의 채팅은 할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(DetailActivity.this, "모임장 정보를 찾을 수 없습니다. (UID 없음)", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+        chatWithHostButton.setOnClickListener(v -> safeLaunch(ChatActivity.class));
 
         // 모임 참여 버튼
         if (btnJoin != null) {
@@ -165,6 +157,9 @@ public class DetailActivity extends AppCompatActivity {
                 Toast.makeText(DetailActivity.this, "즐겨찾기 클릭!", Toast.LENGTH_SHORT).show();
             });
         }
+    }
+
+    private void startActivity(Class<ChatActivity> chatActivityClass) {
     }
 
     private void loadPostData(String postId) {
@@ -216,6 +211,8 @@ public class DetailActivity extends AppCompatActivity {
                         Log.w(TAG, "No image URLs found, using default image");
                         imgCover.setImageResource(R.drawable.camera_logo);
                     }
+
+                    saveRecentPost(currentPost);
                 }
             } else {
                 Toast.makeText(this, "해당 게시물이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
@@ -372,4 +369,28 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void saveRecentPost(Post post) {
+        if (post == null) return;
+
+        SharedPreferences sp = getSharedPreferences(PREF_KEY_RECENT, MODE_PRIVATE);
+        String jsonList = sp.getString("list", null);
+
+        Type t = new com.google.gson.reflect.TypeToken<ArrayList<Post>>(){}.getType();
+        List<Post> list = (jsonList == null) ? new ArrayList<>() :
+                new com.google.gson.Gson().fromJson(jsonList, t);
+
+        /* 중복 제거: 같은 id 있으면 삭제 */
+        for (int i = 0; i < list.size(); i++) {
+            if (post.getId().equals(list.get(i).getId())) {
+                list.remove(i); break;
+            }
+        }
+        list.add(post);                         // 맨 끝에(최신) 추가
+        if (list.size() > 30) list.remove(0);   // 보관 개수 제한(예: 30개)
+
+        sp.edit().putString("list",
+                new com.google.gson.Gson().toJson(list)).apply();
+    }
+
 }

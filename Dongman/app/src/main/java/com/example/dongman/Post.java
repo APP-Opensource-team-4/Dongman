@@ -25,6 +25,8 @@ public class Post implements Serializable {
     private int maxParticipants; // 최대 참가자 수
     private Date updatedAt;    // 수정 시간
 
+    private Integer memberCount;
+
     public Post() {
         this.imageUrls = new ArrayList<>();
     }
@@ -67,8 +69,8 @@ public class Post implements Serializable {
         this.time = time;
     }
 
-    public int getCount() {
-        return count;
+    public int getCount() {                  // 멤버 수 없으면 0
+        return memberCount == null ? 0 : memberCount;
     }
 
     public void setCount(int count) {
@@ -151,6 +153,6 @@ public class Post implements Serializable {
 
     // Helper method to get the first image URL
     public String getFirstImageUrl() {
-        return (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : null;
+        return (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : "";
     }
 }

@@ -28,6 +28,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -117,57 +118,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startListeningForPosts() {
+
         if (firestoreListener != null) {
             firestoreListener.remove();
         }
 
         loadingBar.setVisibility(View.VISIBLE);
-        Query baseQuery = db.collection("posts");
-
-        // 필터에 따른 정렬
-        if (currentFilter == btnPopular) {
-            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
-            Toast.makeText(this, "인기순 필터 (구현 예정)", Toast.LENGTH_SHORT).show();
-        } else if (currentFilter == btnViews) {
-            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
-            Toast.makeText(this, "조회순 필터 (구현 예정)", Toast.LENGTH_SHORT).show();
-        } else if (currentFilter == btnNearby) {
-            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
-            Toast.makeText(this, "가까운순 필터 (구현 예정)", Toast.LENGTH_SHORT).show();
-        } else {
-            // 기본값: 최신순
-            baseQuery = baseQuery.orderBy("timestamp", Query.Direction.DESCENDING);
-        }
+        Query baseQuery = db.collection("posts")
+                .orderBy("timestamp", Query.Direction.DESCENDING); // 기본 정렬
 
         firestoreListener = baseQuery.addSnapshotListener((snapshots, e) -> {
             if (e != null) {
                 Log.w(TAG, "Listen failed.", e);
-                Toast.makeText(this, "게시물 로딩 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 loadingBar.setVisibility(View.GONE);
                 return;
             }
 
             if (snapshots != null) {
                 postList.clear();
-                for (DocumentSnapshot document : snapshots.getDocuments()) {
-                    Post post = document.toObject(Post.class);
-                    if (post != null) {
-                        post.setId(document.getId());
-                        if (post.getImageUrls() == null) {
-                            post.setImageUrls(new ArrayList<>());
-                        }
-                        postList.add(post);
+                for (DocumentSnapshot doc : snapshots.getDocuments()) {
+                    Post p = doc.toObject(Post.class);
+                    if (p != null) {
+                        p.setId(doc.getId());
+                        if (p.getImageUrls() == null) p.setImageUrls(new ArrayList<>());
+                        postList.add(p);
                     }
                 }
+
+                /* 🔴 여기서 필터별로 랜덤 셔플 */
+                if (currentFilter == btnPopular ||
+                        currentFilter == btnViews  ||
+                        currentFilter == btnNearby) {
+                    Collections.shuffle(postList);          // 단순 무작위
+                }
+                // 최신순(btnLatest)은 그대로 유지
+
                 adapter.notifyDataSetChanged();
                 loadingBar.setVisibility(View.GONE);
 
-                if (!postList.isEmpty()) {
-                    recyclerView.scrollToPosition(0);
-                }
+                if (!postList.isEmpty()) recyclerView.scrollToPosition(0);
             }
         });
     }
+
 
     /* ───────── UI Binding and Listeners ───────── */
     private void bindViews() {
@@ -239,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
 
         navFriend.setOnClickListener(v -> safeLaunch(BoardActivity.class));
 
-        navChat.setOnClickListener(v -> safeLaunch(ChatActivity.class));
+        navChat.setOnClickListener(v -> safeLaunch(MyChatListActivity.class));
 
         navProfile.setOnClickListener(v -> safeLaunch(ProfileActivity.class));
     }

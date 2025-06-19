@@ -98,7 +98,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_title_label"
-        android:layout_marginTop="4dp"/>
+        android:layout_marginTop="6dp"/>
 
     <TextView
         android:id="@+id/tv_time"
@@ -128,7 +128,8 @@
         app:layout_constraintEnd_toStartOf="@id/et_count"
         app:layout_constraintTop_toBottomOf="@id/tv_time"
         app:layout_constraintHorizontal_weight="1"
-        android:paddingStart="12dp"/>
+        android:paddingStart="12dp"
+        android:layout_marginTop="6dp" />
 
     <EditText
         android:id="@+id/et_count"
@@ -143,7 +144,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/spinner_time"
         app:layout_constraintHorizontal_weight="1"
-        android:layout_marginStart="12dp"/>
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="6dp" />
 
     <TextView
         android:id="@+id/tv_location"
@@ -165,7 +167,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_location"
-        android:layout_marginTop="4dp"/>
+        android:layout_marginTop="6dp"/>
 
     <TextView
         android:id="@+id/tv_intro"
@@ -193,14 +195,18 @@
 
     <Button
         android:id="@+id/btn_submit"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="100dp"
-        android:backgroundTint="#424242"
-        android:text="작성 완료"
-        android:textColor="#FFFFFF"
-        app:cornerRadius="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-17dp"
+        android:layout_marginRight="-17dp"
+        android:background="@android:color/transparent"
+        android:backgroundTint="@null"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
+        android:text="✏️ 등록"
+        android:textColor="#000000"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginBottom="110dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

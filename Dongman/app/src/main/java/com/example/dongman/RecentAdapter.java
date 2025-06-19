@@ -1,6 +1,7 @@
 package com.example.dongman;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,71 +15,61 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder> {
+public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.VH> {
 
-    private final Context context;
-    private final List<RecentMeeting> meetingList;
-    private final OnItemRemoveClickListener removeClickListener;
-
-    public interface OnItemRemoveClickListener {
-        void onRemoveClick(int position);
+    public interface OnRemoveClick {
+        void onRemove(int position);
     }
 
-    public RecentAdapter(Context context, List<RecentMeeting> meetingList, OnItemRemoveClickListener removeClickListener) {
-        this.context = context;
-        this.meetingList = meetingList;
-        this.removeClickListener = removeClickListener;
+    private final Context ctx;
+    private final List<Post> data;
+    private final OnRemoveClick remover;
+
+    public RecentAdapter(Context c, List<Post> d, OnRemoveClick r) {
+        this.ctx = c; this.data = d; this.remover = r;
     }
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_recent_meeting, parent, false);
-        return new ViewHolder(view);
+    @NonNull @Override
+    public VH onCreateViewHolder(@NonNull ViewGroup p, int v) {
+        return new VH(LayoutInflater.from(ctx).inflate(R.layout.item_recent_meeting, p, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        RecentMeeting meeting = meetingList.get(position);
+    public void onBindViewHolder(@NonNull VH h, int pos) {
+        Post p = data.get(pos);
+        h.title.setText(p.getTitle());
+        h.desc .setText(p.getContent());
+        h.tags .setText(p.getLocation() + " · 멤버 " + p.getCount());
 
-        holder.tvTitle.setText(meeting.title);
-        holder.tvDesc.setText(meeting.description);
-        holder.tvTags.setText(meeting.tags);
-
-        // 이미지 URL이 있는 경우 Glide로 로딩, 없으면 기본 이미지 사용
-        if (meeting.imageUrl != null && !meeting.imageUrl.isEmpty()) {
-            Glide.with(context)
-                    .load(meeting.imageUrl)
-                    .placeholder(R.drawable.camera_logo)
-                    .error(R.drawable.camera_logo)
-                    .into(holder.imgThumbnail);
+        if (p.getFirstImageUrl() != null && !p.getFirstImageUrl().isEmpty()) {
+            Glide.with(ctx).load(p.getFirstImageUrl())
+                    .placeholder(R.drawable.placeholder_thumbnail)
+                    .into(h.img);
         } else {
-            holder.imgThumbnail.setImageResource(R.drawable.camera_logo);
+            h.img.setImageResource(R.drawable.placeholder_thumbnail);
         }
 
-        holder.btnRemove.setOnClickListener(v -> {
-            if (removeClickListener != null) {
-                removeClickListener.onRemoveClick(position);
-            }
+        h.btnRemove.setOnClickListener(v -> remover.onRemove(pos));
+
+        h.itemView.setOnClickListener(v -> {
+            Intent i = new Intent(ctx, DetailActivity.class);
+            i.putExtra("postId", p.getId());
+            ctx.startActivity(i);
         });
     }
 
-    @Override
-    public int getItemCount() {
-        return meetingList.size();
-    }
+    @Override public int getItemCount() { return data.size(); }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgThumbnail, btnRemove;
-        TextView tvTitle, tvDesc, tvTags;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            imgThumbnail = itemView.findViewById(R.id.img_thumbnail);
-            btnRemove = itemView.findViewById(R.id.btn_remove);
-            tvTitle = itemView.findViewById(R.id.tv_group_title);
-            tvDesc = itemView.findViewById(R.id.tv_group_desc);
-            tvTags = itemView.findViewById(R.id.tv_group_tags);
+    static class VH extends RecyclerView.ViewHolder {
+        ImageView img, btnRemove;
+        TextView  title, desc, tags;
+        VH(@NonNull View v){
+            super(v);
+            img  = v.findViewById(R.id.img_thumbnail);
+            btnRemove = v.findViewById(R.id.btn_remove);
+            title= v.findViewById(R.id.tv_group_title);
+            desc = v.findViewById(R.id.tv_group_desc);
+            tags = v.findViewById(R.id.tv_group_tags);
         }
     }
 }

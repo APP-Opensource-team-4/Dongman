@@ -5,20 +5,17 @@ public class BoardPost {
     public final String title;
     public final String preview;
     public final String time;
-    public final int commentCount;
+    public final int viewCount;                // 🔸 필드명 변경!
 
-    public BoardPost(String postId, String title, String preview, String time, int commentCount) {
+    public BoardPost(String postId, String title,
+                     String preview, String time,
+                     int viewCount) {          // 🔸 매개변수도 교체
         this.postId = postId;
         this.title = title;
         this.preview = preview;
         this.time = time;
-        this.commentCount = commentCount;
+        this.viewCount = viewCount;
     }
 
-    // getter 필요 시 추가해도 돼
-    public String getPostId() { return postId; }
-    public String getTitle() { return title; }
-    public String getPreview() { return preview; }
-    public String getTime() { return time; }
-    public int getCommentCount() { return commentCount; }
+    public int getViewCount() { return viewCount; }
 }

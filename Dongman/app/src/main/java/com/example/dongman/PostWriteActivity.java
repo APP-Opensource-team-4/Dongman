@@ -107,7 +107,7 @@ public class PostWriteActivity extends AppCompatActivity {
         btnAddPhoto = findViewById(R.id.btn_add_photo);
         tvPhotoCount = findViewById(R.id.tv_photo_count);
         layoutImagePreviews = findViewById(R.id.layout_image_previews);
-        progressBar = findViewById(R.id.progress_bar);
+        // progressBar = findViewById(R.id.progress_bar);
 
         // 시간 스피너 설정
         ArrayAdapter<CharSequence> timeAdapter = ArrayAdapter.createFromResource(this,

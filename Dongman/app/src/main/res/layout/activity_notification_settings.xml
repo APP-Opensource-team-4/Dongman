@@ -9,7 +9,7 @@
 
     <!-- ── 뒤로가기 화살표 툴바 ── -->
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_back"
+        android:id="@+id/toolbar"
         android:layout_width="86dp"
         android:layout_height="98dp"
         android:background="#FFFFFF"
@@ -30,11 +30,11 @@
         android:textColor="#000000"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/toolbar_back"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.322"
-        app:layout_constraintStart_toEndOf="@id/toolbar_back"
-        app:layout_constraintTop_toTopOf="@id/toolbar_back"
+        app:layout_constraintStart_toEndOf="@id/toolbar"
+        app:layout_constraintTop_toTopOf="@id/toolbar"
         app:layout_constraintVertical_bias="0.6" />
 
     <ScrollView
@@ -45,7 +45,7 @@
         android:paddingTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_back"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout

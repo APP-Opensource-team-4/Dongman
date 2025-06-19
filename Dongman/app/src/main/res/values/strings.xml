@@ -29,6 +29,8 @@
         <item>오후 6시</item>
     </string-array>
 
+<!--    <string name="post_underlined"><u>❌ 삭제</u></string>-->
+
     <!-- 🔹 Detail 화면용 문자열 -->
     <string name="title_weekly">함께 운동해요 동만이 모임 OPEN</string>
     <string name="meta_weekly">청주시 | 운동/친목 | 멤버 38명</string>

@@ -54,9 +54,10 @@
         <activity android:name=".BoardActivity" android:exported="false" />
         <activity android:name=".NotificationSettingsActivity" android:exported="false" />
         <activity android:name=".RecentActivity" />
-
         <activity android:name=".MapActivity" android:exported="false" />
         <activity android:name=".MyPostsActivity" android:exported="false" />
-
+        <activity android:name=".WriteBoardActivity" android:exported="false" />
+        <activity android:name=".PostDetailActivity" android:exported="false"/>
+        <activity android:name=".MyChatListActivity" android:exported="false"/>
     </application>
 </manifest>

@@ -119,18 +119,13 @@ public class ChatActivity extends AppCompatActivity {
     private void setupChatCollection() {
         // 1:1 채팅방 컬렉션 설정
         if (chatRoomId != null && !chatRoomId.isEmpty()) {
-            // DetailActivity에서 온 경우: 특정 1:1 채팅방
-            chatCollection = db.collection("chatRooms").document(chatRoomId).collection("messages");
-            Log.d(TAG, "Using specific chat room: " + chatRoomId);
+            /* 1:1 · 그룹 공통 ─ chats/{roomId}/messages */
+            chatCollection = db.collection("chats")
+                    .document(chatRoomId)
+                    .collection("messages");
         } else {
-            // 메인화면에서 온 경우: 전체 채팅 (임시)
-            Log.d(TAG, "No chatRoomId provided, using general chat");
-            chatCollection = db.collection("chats"); // 전체 채팅방 사용
-
-            // 툴바 제목 변경
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle("전체 채팅");
-            }
+            /* (옵션) 전체 채팅용 */
+            chatCollection = db.collection("chats_global");
         }
     }
 
@@ -209,23 +204,21 @@ public class ChatActivity extends AppCompatActivity {
             senderId = user.getUid();
         }
 
-        // 메시지 객체 생성
-        Message message = new Message(senderId, senderName, messageText);
+        Message msg = new Message(senderId, senderName, messageText);
 
-        // Firestore에 메시지 저장
-        chatCollection.add(message)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "Message sent successfully");
-                        messageEditText.setText("");
-                        // 메시지 전송 후 자동으로 스크롤
-                        if (messageList.size() > 0) {
-                            chatRecyclerView.scrollToPosition(messageList.size() - 1);
-                        }
-                    } else {
-                        Log.e(TAG, "메시지 전송 실패", task.getException());
-                        Toast.makeText(ChatActivity.this, "메시지 전송 실패!", Toast.LENGTH_SHORT).show();
-                    }
+        chatCollection.add(msg)
+                .addOnSuccessListener(d -> {
+                    // 🔻 chats/{roomId} 문서 업데이트
+                    db.collection("chats").document(chatRoomId)
+                            .update("lastMessage", messageText,
+                                    "lastTime", com.google.firebase.Timestamp.now());
+
+                    messageEditText.setText("");
+                    chatRecyclerView.scrollToPosition(messageList.size()-1);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this,"메시지 전송 실패",Toast.LENGTH_SHORT).show();
+                    Log.e(TAG,"send fail",e);
                 });
     }
 
