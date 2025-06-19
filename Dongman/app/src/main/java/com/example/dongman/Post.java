@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Post implements Serializable {
 
-    public String id; // Firestore 문서 ID
+    public String id;
     public String title;
     public String time;
     public int count;
@@ -30,7 +30,6 @@ public class Post implements Serializable {
         this.timestamp = timestamp;
     }
 
-    // Getter / Setter
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -55,7 +54,6 @@ public class Post implements Serializable {
     public Date getTimestamp() { return timestamp; }
     public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 
-    // 🔥 추가: 대표 이미지 URL 가져오기
     public String getFirstImageUrl() {
         return (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : null;
     }

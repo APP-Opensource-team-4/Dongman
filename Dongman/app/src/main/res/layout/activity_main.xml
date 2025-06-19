@@ -33,7 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 상단방 -->
+    <!-- 상단바 -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="0dp"
@@ -103,7 +103,7 @@
         <TextView
             android:id="@+id/btn_nearby"
             style="@style/FilterChip"
-            android:text="가ꦬ운 순"/>
+            android:text="가까운 순"/>
     </LinearLayout>
 
     <!-- 그룹의 글쓰기 버튼 -->
@@ -118,12 +118,12 @@
         android:textStyle="bold"
         app:backgroundTint="@color/primaryBlue"
         app:elevation="6dp"
-        app:icon="@drawable/ic_add"
         app:iconPadding="4dp"
         app:iconTint="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:shapeAppearanceOverlay="@style/RoundedPill" />
+    <!-- ⚠️ 아이콘 설정 삭제: app:icon="@drawable/ic_add" -->
 
     <!-- 하단 구분선 -->
     <View
