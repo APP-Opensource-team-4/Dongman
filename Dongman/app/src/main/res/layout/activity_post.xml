@@ -135,17 +135,17 @@
         android:id="@+id/et_count"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:hint="0"
-        android:inputType="number"
-        android:background="@drawable/shape_stroke_round"
-        android:paddingStart="12dp"
-        android:importantForAutofill="yes"
-        app:layout_constraintStart_toEndOf="@id/spinner_time"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/spinner_time"
-        app:layout_constraintHorizontal_weight="1"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="6dp" />
+        android:layout_marginTop="0dp"
+        android:background="@drawable/shape_stroke_round"
+        android:hint="0"
+        android:importantForAutofill="yes"
+        android:inputType="number"
+        android:paddingStart="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/spinner_time"
+        app:layout_constraintTop_toTopOf="@id/spinner_time" />
 
     <TextView
         android:id="@+id/tv_location"
