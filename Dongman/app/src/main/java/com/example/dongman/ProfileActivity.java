@@ -39,6 +39,17 @@ public class ProfileActivity extends AppCompatActivity {
                 .setOnClickListener(v ->
                         startActivity(new Intent(this, EditProfileActivity.class)));
 
+        findViewById(R.id.row_mine).setOnClickListener(v ->
+                startActivity(new Intent(this, BoardActivity.class)));
+
+        findViewById(R.id.row_recent).setOnClickListener(v -> {
+            startActivity(new Intent(this, RecentActivity.class));
+        });
+
+        findViewById(R.id.row_like).setOnClickListener(v ->
+                startActivity(new Intent(this, InterestActivity.class)));
+
+
         /* ───── 하단 네비 ───── */
         findViewById(R.id.nav_home   ).setOnClickListener(v ->
                 startActivity(new Intent(this, MainActivity.class)
